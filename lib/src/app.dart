@@ -7,7 +7,7 @@ import 'pages/resume_page.dart';
 import 'pages/admin_page.dart';
 import 'state/theme_provider.dart';
 import 'state/cv_provider.dart';
-import 'state/edit_mode_provider.dart';
+
 
 class MyPortfolioApp extends StatelessWidget {
   const MyPortfolioApp({super.key});
@@ -18,7 +18,6 @@ class MyPortfolioApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()..load()),
         ChangeNotifierProvider(create: (_) => CVProvider()..load()),
-        ChangeNotifierProvider(create: (_) => EditModeProvider()),
       ],
       child: Consumer2<ThemeProvider, CVProvider>(
         builder: (context, theme, cv, _) {

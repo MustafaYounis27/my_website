@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../widgets/section_header.dart';
 import '../state/cv_provider.dart';
 
+
 class AboutSection extends StatelessWidget {
   const AboutSection({super.key});
 

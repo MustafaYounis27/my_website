@@ -31,7 +31,13 @@ class _TestSvgBundle extends CachingAssetBundle {
 
 void main() {
   testWidgets('Project card shows title and opens dialog', (tester) async {
-    final project = Project(name: 'Proj', period: '2020', description: 'Desc', stores: const ['https://example.com']);
+    final project = Project(
+      name: 'Proj', 
+      period: '2020', 
+      description: 'Desc', 
+      technologies: const ['Flutter', 'Dart'],
+      stores: const ['https://example.com']
+    );
     await tester.pumpWidget(
       DefaultAssetBundle(
         bundle: _TestSvgBundle(),

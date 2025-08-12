@@ -11,6 +11,7 @@ import '../widgets/experience_section.dart';
 import '../widgets/projects_section.dart';
 import '../widgets/contact_section.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
+  String _currentSection = 'home';
   final _keys = <String, GlobalKey>{
     'home': GlobalKey(),
     'about': GlobalKey(),
@@ -30,33 +32,59 @@ class _HomePageState extends State<HomePage> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final cv = context.watch<CVProvider>().cv;
     if (cv != null) {
-      Seo.update(
-        title: '${cv.name} - ${cv.title}',
-        description: cv.summary,
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/',
-      );
+      Seo.update(title: '${cv.name} - ${cv.title}', description: cv.summary, imageUrl: '/icons/Icon-512.png', urlPath: '/');
     }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _onScroll() {
+    // Detect which section is currently in view
+    String newSection = 'home';
+    
+    for (final entry in _keys.entries) {
+      final context = entry.value.currentContext;
+      if (context != null) {
+        final box = context.findRenderObject() as RenderBox?;
+        if (box != null) {
+          final position = box.localToGlobal(Offset.zero);
+          // Check if section is in viewport (with some offset for better UX)
+          if (position.dy <= 150) {
+            newSection = entry.key;
+          }
+        }
+      }
+    }
+    
+    if (newSection != _currentSection) {
+      setState(() {
+        _currentSection = newSection;
+      });
+    }
+  }
+
   void _scrollTo(String id) {
+    setState(() {
+      _currentSection = id;
+    });
     final key = _keys[id];
     if (key?.currentContext != null) {
-      Scrollable.ensureVisible(
-        key!.currentContext!,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
+      Scrollable.ensureVisible(key!.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
     }
   }
 
@@ -69,8 +97,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: AppNav(onSelectSection: _scrollTo),
-          )
+            child: AppNav(
+              onSelectSection: _scrollTo,
+              currentSection: _currentSection,
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(

@@ -116,16 +116,29 @@ class Project {
   final String period;
   final String description;
   final List<String> technologies;
-  final String link;
-  final String github;
-  Project({required this.name, required this.period, required this.description, required this.technologies, required this.link, required this.github});
+  final String? link;
+  final String? github;
+  final List<String> stores; // Keep for backward compatibility
+  
+  Project({
+    required this.name, 
+    required this.period, 
+    required this.description, 
+    required this.technologies,
+    this.link,
+    this.github,
+    List<String>? stores,
+  }) : stores = stores ?? technologies; // Use technologies as stores for compatibility
+  
   factory Project.fromJson(Map<String, dynamic> json) => Project(
         name: json['name'] ?? '',
         period: json['period'] ?? '',
         description: json['description'] ?? '',
-        technologies: (json['technologies'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+        technologies: (json['technologies'] as List<dynamic>? ?? 
+                      json['stores'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
         link: json['link'],
         github: json['github'],
+        stores: (json['stores'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
       );
       
   Map<String, dynamic> toJson() => {
@@ -133,6 +146,7 @@ class Project {
         'period': period,
         'description': description,
         'technologies': technologies,
+        'stores': stores,
         'link': link,
         'github': github,
       };
@@ -146,4 +160,9 @@ class Links {
         appStoreExamples: (json['app_store_examples'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
         playStoreExamples: (json['play_store_examples'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
       );
+      
+  Map<String, dynamic> toJson() => {
+        'app_store_examples': appStoreExamples,
+        'play_store_examples': playStoreExamples,
+      };
 }

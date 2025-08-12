@@ -6,7 +6,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 class AppNav extends StatelessWidget {
   final void Function(String sectionId)? onSelectSection; // only used on home page
-  const AppNav({super.key, this.onSelectSection});
+  final String? currentSection;
+  const AppNav({super.key, this.onSelectSection, this.currentSection});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,8 @@ class AppNav extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     Widget navButton(String label, String sectionOrRoute, {bool isRoute = false, IconData? icon}) {
+      final isSelected = currentSection == sectionOrRoute;
+      
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
         child: Material(
@@ -31,7 +34,15 @@ class AppNav extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.transparent,
+                color: isSelected 
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                    : Colors.transparent,
+                border: isSelected
+                    ? Border.all(
+                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        width: 1,
+                      )
+                    : null,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -40,15 +51,19 @@ class AppNav extends StatelessWidget {
                     Icon(
                       icon,
                       size: 18,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: isSelected 
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 6),
                   ],
                   Text(
                     label,
                     style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                      color: isSelected 
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurface,
                       fontSize: 14,
                     ),
                   ),
