@@ -40,12 +40,30 @@ class CV {
         linkedin: json['linkedin'] ?? '',
         github: json['github'] ?? '',
         summary: json['summary'] ?? '',
+        profileImage: json['profileImage'],
         education: Education.fromJson(json['education'] ?? {}),
         skills: (json['skills'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
         experience: (json['experience'] as List<dynamic>? ?? []).map((e) => Experience.fromJson(e)).toList(),
         projects: (json['projects'] as List<dynamic>? ?? []).map((e) => Project.fromJson(e)).toList(),
         links: Links.fromJson(json['links'] ?? {}),
       );
+      
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'title': title,
+        'email': email,
+        'phone': phone,
+        'location': location,
+        'linkedin': linkedin,
+        'github': github,
+        'summary': summary,
+        'profileImage': profileImage,
+        'education': education.toJson(),
+        'skills': skills,
+        'experience': experience.map((e) => e.toJson()).toList(),
+        'projects': projects.map((p) => p.toJson()).toList(),
+        'links': links.toJson(),
+      };
 }
 
 class Education {
@@ -60,6 +78,13 @@ class Education {
         period: json['period'] ?? '',
         location: json['location'] ?? '',
       );
+      
+  Map<String, dynamic> toJson() => {
+        'degree': degree,
+        'university': university,
+        'period': period,
+        'location': location,
+      };
 }
 
 class Experience {
@@ -76,20 +101,41 @@ class Experience {
         location: json['location'] ?? '',
         highlights: (json['highlights'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
       );
+      
+  Map<String, dynamic> toJson() => {
+        'company': company,
+        'role': role,
+        'period': period,
+        'location': location,
+        'highlights': highlights,
+      };
 }
 
 class Project {
   final String name;
   final String period;
   final String description;
-  final List<String> stores;
-  Project({required this.name, required this.period, required this.description, required this.stores});
+  final List<String> technologies;
+  final String link;
+  final String github;
+  Project({required this.name, required this.period, required this.description, required this.technologies, required this.link, required this.github});
   factory Project.fromJson(Map<String, dynamic> json) => Project(
         name: json['name'] ?? '',
         period: json['period'] ?? '',
         description: json['description'] ?? '',
-        stores: (json['stores'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+        technologies: (json['technologies'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+        link: json['link'],
+        github: json['github'],
       );
+      
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'period': period,
+        'description': description,
+        'technologies': technologies,
+        'link': link,
+        'github': github,
+      };
 }
 
 class Links {
