@@ -1,0 +1,103 @@
+{
+  "name": "Mustafa Mahmoud",
+  "title": "Senior Mobile Engineer",
+  "email": "mustafamahmoudyounis@gmail.com",
+  "phone": "+201006989546",
+  "location": "Cairo, Egypt",
+  "linkedin": "https://www.linkedin.com/in/mustafa-mahmoud-younis-8b9484198/",
+  "github": "https://github.com/MustafaYounis27",
+  "summary": "Highly skilled Senior Flutter Engineer with extensive experience in cross-platform mobile application development. Currently driving innovation at The Address Holding, specializing in Flutter framework and modern mobile development practices. Proven track record of delivering scalable, high-performance mobile solutions with a strong focus on user experience and code quality. Demonstrated leadership in technical decision-making and mentoring development teams.",
+  "education": {
+    "degree": "Bachelor Degree, Systems and Computers Engineering",
+    "university": "Al-Azhar University",
+    "period": "09/2017 - 06/2022",
+    "location": "Cairo"
+  },
+  "skills": ["Flutter", "Android", "Dart", "Java", "Kotlin", "Python", "Git", "Firebase", "OOP", "SOLID"],
+  "experience": [
+    {
+      "company": "The Address Investments",
+      "role": "Senior Flutter Engineer",
+      "period": "02/2025 - Present",
+      "location": "Cairo",
+      "highlights": [
+        "Manage daily IT operations and safeguard employee data through advanced security measures.",
+        "Install and maintain hardware and software; lead technical decisions and mentoring."
+      ]
+    },
+    {
+      "company": "POSBANK ME",
+      "role": "Flutter Developer",
+      "period": "03/2022 - 02/2025",
+      "location": "Cairo",
+      "highlights": [
+        "Built customized POS system for restaurants and markets that reduced order processing time by 50%, increased client sales by 20%.",
+        "Implemented real-time sales tracking and inventory features reducing waste by 25%."
+      ]
+    },
+    {
+      "company": "ITWorks",
+      "role": "Flutter Developer",
+      "period": "01/2021 - 03/2022",
+      "location": "Cairo",
+      "highlights": [
+        "Implemented multiple apps using 100% Dart; developed cross-platform features from scratch."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "POPs Enterprise & POPs Restaurant+",
+      "period": "04/2022 - 02/2025",
+      "description": "Intuitive interface for restaurant staff; cloud-based item management and payment processing; improved efficiency and reduced order processing time by 50%.",
+      "stores": [
+        "https://apps.apple.com/eg/app/pops-restaurant/id1630635108?l=ar",
+        "https://play.google.com/store/search?q=pops+restaurant+plus&c=apps",
+        "https://appgallery.huawei.com/app/C107076071",
+        "https://apps.microsoft.com/detail/9pk6d2d21mg7?hl=en-US&gl=US"
+      ]
+    },
+    {
+      "name": "E-Invoice QR Reader (KSA)",
+      "period": "07/2022 - 08/2022",
+      "description": "App to display QR code content of E-invoice (KSA). Tracks transactions, visualizes expenses with graphs, exportable reports. 250K+ active users.",
+      "stores": [
+        "https://apps.apple.com/us/app/e-invoice-qr-reader-ksa/id1580793042?platform=iphone",
+        "https://play.google.com/store/apps/details?id=com.posbankbh.einvoiceqrreader&hl=en&gl=US"
+      ]
+    },
+    {
+      "name": "My TAI",
+      "period": "02/2025",
+      "description": "Customer management solution for The Address Investments.",
+      "stores": [
+        "https://apps.apple.com/eg/app/my-tai/id1613010314",
+        "https://play.google.com/store/apps/details?id=com.theaddress.mytai&hl=en"
+      ]
+    },
+    {
+      "name": "The MarQ Communities",
+      "period": "02/2025",
+      "description": "Community app inspired by Marquise diamond; focused on curated user experiences.",
+      "stores": [
+        "https://apps.apple.com/eg/app/the-marq-communities/id1643949318",
+        "https://play.google.com/store/apps/details?id=com.themarq.experience&hl=en"
+      ]
+    },
+    {
+      "name": "Ovii Care",
+      "period": "01/2024 - 01/2025",
+      "description": "Female-centric health & wellness app; personalized features for women's health.",
+      "stores": ["https://apps.apple.com/sa/app/ovii/id6532629410"]
+    }
+  ],
+  "links": {
+    "app_store_examples": [
+      "https://apps.apple.com/eg/app/pops-restaurant/id1630635108?l=ar",
+      "https://apps.apple.com/tr/app/pops-enterprise/id6448128426"
+    ],
+    "play_store_examples": [
+      "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud"
+    ]
+  }
+}
