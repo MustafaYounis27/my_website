@@ -13,7 +13,18 @@
     "period": "09/2017 - 06/2022",
     "location": "Cairo"
   },
-  "skills": ["Flutter", "Android", "Dart", "Java", "Kotlin", "Python", "Git", "Firebase", "OOP", "SOLID"],
+  "skills": [
+    "Flutter",
+    "Android",
+    "Dart",
+    "Java",
+    "Kotlin",
+    "Python",
+    "Git",
+    "Firebase",
+    "OOP",
+    "SOLID"
+  ],
   "experience": [
     {
       "company": "The Address Investments",
@@ -47,7 +58,20 @@
   ],
   "projects": [
     {
-      "name": "POPs Enterprise & POPs Restaurant+",
+      "name": "Snapos",
+      "image": "assets/images/snapos.png",
+      "period": "04/2022 - 02/2025",
+      "description": "Intuitive interface for restaurant staff; cloud-based item management and payment processing; improved efficiency and reduced order processing time by 50%.",
+      "stores": [
+        "https://apps.apple.com/eg/app/snapos-fast-reliable-pos/id6448128426",
+        "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud&pli=1",
+        "https://appgallery.huawei.com/app/C108156765",
+        "https://apps.microsoft.com/detail/9nj3gtplnk63?hl=en-US&gl=US"
+      ]
+    },
+    {
+      "name": "POPs Restaurant+",
+      "image": "assets/images/pops_enterprise.png",
       "period": "04/2022 - 02/2025",
       "description": "Intuitive interface for restaurant staff; cloud-based item management and payment processing; improved efficiency and reduced order processing time by 50%.",
       "stores": [
@@ -59,6 +83,7 @@
     },
     {
       "name": "E-Invoice QR Reader (KSA)",
+      "image": "assets/images/e_invoice_image.webp",
       "period": "07/2022 - 08/2022",
       "description": "App to display QR code content of E-invoice (KSA). Tracks transactions, visualizes expenses with graphs, exportable reports. 250K+ active users.",
       "stores": [
@@ -68,6 +93,7 @@
     },
     {
       "name": "My TAI",
+      "image": "assets/images/my_tai.webp",
       "period": "02/2025",
       "description": "Customer management solution for The Address Investments.",
       "stores": [
@@ -77,6 +103,7 @@
     },
     {
       "name": "The MarQ Communities",
+      "image": "assets/images/marq_communities.webp",
       "period": "02/2025",
       "description": "Community app inspired by Marquise diamond; focused on curated user experiences.",
       "stores": [
@@ -86,9 +113,12 @@
     },
     {
       "name": "Ovii Care",
+      "image": "",
       "period": "01/2024 - 01/2025",
       "description": "Female-centric health & wellness app; personalized features for women's health.",
-      "stores": ["https://apps.apple.com/sa/app/ovii/id6532629410"]
+      "stores": [
+        "https://apps.apple.com/sa/app/ovii/id6532629410"
+      ]
     }
   ],
   "links": {

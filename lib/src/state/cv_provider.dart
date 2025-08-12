@@ -6,19 +6,14 @@ import '../models/cv.dart';
 
 class CVProvider extends ChangeNotifier {
   CV? _cv;
-  String? _profileImageOverride;
-  
+
   CV? get cv => _cv;
   bool get isLoaded => _cv != null;
-  String? get profileImage => _profileImageOverride ?? _cv?.profileImage;
 
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
-      // Load saved profile image
-      _profileImageOverride = prefs.getString('profile_image');
-      
+
       final override = prefs.getString('cv_override_json');
       if (override != null && override.trim().isNotEmpty) {
         await loadFromString(override);
@@ -36,43 +31,29 @@ class CVProvider extends ChangeNotifier {
     _cv = CV.fromJson(map);
     notifyListeners();
   }
-  
-  Future<void> updateProfileImage(String imageData) async {
-    _profileImageOverride = imageData;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image', imageData);
-    notifyListeners();
-  }
-  
-  Future<void> clearProfileImage() async {
-    _profileImageOverride = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('profile_image');
-    notifyListeners();
-  }
-  
+
   // Update methods for all CV fields
   Future<void> updateField(String field, dynamic value) async {
     if (_cv == null) return;
-    
+
     final currentJson = _cv!.toJson();
     currentJson[field] = value;
-    
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('cv_override_json', json.encode(currentJson));
-    
+
     _cv = CV.fromJson(currentJson);
     notifyListeners();
   }
-  
+
   Future<void> updateEducation(Map<String, dynamic> education) async {
     await updateField('education', education);
   }
-  
+
   Future<void> updateSkills(List<String> skills) async {
     await updateField('skills', skills);
   }
-  
+
   Future<void> addSkill(String skill) async {
     if (_cv == null) return;
     final skills = List<String>.from(_cv!.skills);
@@ -81,36 +62,34 @@ class CVProvider extends ChangeNotifier {
       await updateSkills(skills);
     }
   }
-  
+
   Future<void> removeSkill(String skill) async {
     if (_cv == null) return;
     final skills = List<String>.from(_cv!.skills);
     skills.remove(skill);
     await updateSkills(skills);
   }
-  
+
   Future<void> updateExperience(int index, Map<String, dynamic> experience) async {
     if (_cv == null || index >= _cv!.experience.length) return;
-    
+
     final experiences = _cv!.experience.map((e) => e.toJson()).toList();
     experiences[index] = experience;
     await updateField('experience', experiences);
   }
-  
+
   Future<void> updateProject(int index, Map<String, dynamic> project) async {
     if (_cv == null || index >= _cv!.projects.length) return;
-    
+
     final projects = _cv!.projects.map((p) => p.toJson()).toList();
     projects[index] = project;
     await updateField('projects', projects);
   }
-  
+
   Future<void> resetToDefault() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('cv_override_json');
-    await prefs.remove('profile_image');
-    _profileImageOverride = null;
-    
+
     final jsonStr = await rootBundle.loadString('assets/data/cv.json');
     await loadFromString(jsonStr);
   }

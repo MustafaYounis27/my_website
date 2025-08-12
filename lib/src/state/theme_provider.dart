@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,10 +34,13 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   Future<void> toggle() async {
-    if (_themeMode == ThemeMode.dark) {
-      await setThemeMode(ThemeMode.light);
-    } else {
-      await setThemeMode(ThemeMode.dark);
+    // If current mode follows system, toggle relative to the EFFECTIVE brightness
+    // so the first toggle always switches visually.
+    if (_themeMode == ThemeMode.system) {
+      final current = PlatformDispatcher.instance.platformBrightness;
+      await setThemeMode(current == Brightness.dark ? ThemeMode.light : ThemeMode.dark);
+      return;
     }
+    await setThemeMode(_themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
   }
 }

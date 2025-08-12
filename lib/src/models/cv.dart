@@ -113,6 +113,7 @@ class Experience {
 
 class Project {
   final String name;
+  final String? image;
   final String period;
   final String description;
   final List<String> technologies;
@@ -121,7 +122,8 @@ class Project {
   final List<String> stores; // Keep for backward compatibility
   
   Project({
-    required this.name, 
+    required this.name,
+    this.image,
     required this.period, 
     required this.description, 
     required this.technologies,
@@ -132,6 +134,7 @@ class Project {
   
   factory Project.fromJson(Map<String, dynamic> json) => Project(
         name: json['name'] ?? '',
+        image: json['image'],
         period: json['period'] ?? '',
         description: json['description'] ?? '',
         technologies: (json['technologies'] as List<dynamic>? ?? 
@@ -143,6 +146,7 @@ class Project {
       
   Map<String, dynamic> toJson() => {
         'name': name,
+        'image': image,
         'period': period,
         'description': description,
         'technologies': technologies,

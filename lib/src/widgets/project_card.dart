@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../models/cv.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ProjectCard extends StatefulWidget {
   final Project project;
@@ -19,17 +18,8 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.02,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -69,9 +59,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                     : null,
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(
-                      _isHovered ? 0.15 : 0.05,
-                    ),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(_isHovered ? 0.15 : 0.05),
                     blurRadius: _isHovered ? 20 : 10,
                     offset: Offset(0, _isHovered ? 8 : 4),
                   ),
@@ -104,15 +92,21 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: SvgPicture.asset(
-                                'assets/images/project_placeholder.svg',
-                                width: 32,
-                                height: 32,
-                                colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.primary,
-                                  BlendMode.srcIn,
-                                ),
-                              ),
+                              child: widget.project.image != null && widget.project.image!.isNotEmpty
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        widget.project.image!,
+                                        width: 32,
+                                        height: 32,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          // Fallback to icon if image fails to load
+                                          return Icon(Icons.apps_rounded, size: 32, color: Theme.of(context).colorScheme.primary);
+                                        },
+                                      ),
+                                    )
+                                  : Icon(Icons.apps_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -138,19 +132,16 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                             ),
                             Icon(
                               Icons.arrow_forward_rounded,
-                              color: Theme.of(context).colorScheme.primary.withOpacity(
-                                _isHovered ? 1.0 : 0.5,
-                              ),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(_isHovered ? 1.0 : 0.5),
                             ),
                           ],
                         ),
                         const SizedBox(height: 16),
                         Text(
                           widget.project.description,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            height: 1.5,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                          ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(height: 1.5, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -161,39 +152,31 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                             runSpacing: 8,
                             children: widget.project.stores
                                 .take(2)
-                                .map((store) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.link,
-                                            size: 12,
+                                .map(
+                                  (store) => Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), width: 1),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(_getStoreIcon(store), size: 14, color: Theme.of(context).colorScheme.secondary),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          _getStoreName(store),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
                                             color: Theme.of(context).colorScheme.secondary,
                                           ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            _domain(store),
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color: Theme.of(context).colorScheme.secondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                           ),
                       ],
@@ -215,6 +198,32 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
     } catch (_) {
       return url;
     }
+  }
+
+  IconData _getStoreIcon(String url) {
+    if (url.contains('apple.com')) {
+      return Icons.phone_iphone; // App Store icon
+    } else if (url.contains('play.google.com')) {
+      return Icons.shop; // Play Store icon  
+    } else if (url.contains('appgallery.huawei.com')) {
+      return Icons.apps; // AppGallery icon
+    } else if (url.contains('apps.microsoft.com')) {
+      return Icons.window; // Microsoft Store icon
+    }
+    return Icons.link; // Default icon
+  }
+
+  String _getStoreName(String url) {
+    if (url.contains('apple.com')) {
+      return 'App Store';
+    } else if (url.contains('play.google.com')) {
+      return 'Play Store';
+    } else if (url.contains('appgallery.huawei.com')) {
+      return 'AppGallery';
+    } else if (url.contains('apps.microsoft.com')) {
+      return 'Microsoft Store';
+    }
+    return _domain(url);
   }
 
   void _showProjectDialog(BuildContext context) {
@@ -240,18 +249,16 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                     for (final s in widget.project.stores)
                       FilledButton.tonalIcon(
                         onPressed: () => launchUrlString(s, webOnlyWindowName: '_blank'),
-                        icon: const Icon(Icons.open_in_new, size: 16),
-                        label: Text(_domain(s)),
+                        icon: Icon(_getStoreIcon(s), size: 16),
+                        label: Text(_getStoreName(s)),
                       ),
                   ],
                 ),
-              ]
+              ],
             ],
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
       ),
     );
   }
