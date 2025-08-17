@@ -1,0 +1,13 @@
+[build]
+  command = "bash ./netlify_build.sh"
+  publish = "build/web"
+
+# Optional environment hints
+[build.environment]
+  PUB_CACHE = "/opt/buildhome/.pub-cache"
+
+# SPA-style routing so deep links work
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
