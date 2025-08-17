@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/theme_provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../core/responsive.dart';
 
 class AppNav extends StatelessWidget {
   final void Function(String sectionId)? onSelectSection; // only used on home page
@@ -13,6 +14,7 @@ class AppNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final isHome = ModalRoute.of(context)?.settings.name == '/';
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMobile = context.isMobile;
 
     Widget navButton(String label, String sectionOrRoute, {bool isRoute = false, IconData? icon}) {
       final isSelected = currentSection == sectionOrRoute;
@@ -24,10 +26,13 @@ class AppNav extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
-              if (isRoute || !isHome || onSelectSection == null) {
+              if (isRoute) {
                 Navigator.pushNamed(context, sectionOrRoute);
-              } else {
+              } else if (isHome && onSelectSection != null) {
                 onSelectSection!(sectionOrRoute);
+              } else {
+                // Not on home and not a dedicated route -> go to home
+                Navigator.pushNamed(context, '/');
               }
             },
             child: Container(
@@ -60,6 +65,120 @@ class AppNav extends StatelessWidget {
       ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, duration: 400.ms);
     }
 
+    // Mobile: show compact actions (theme toggle + menu)
+    if (isMobile) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const _ThemeToggleButton(),
+          const SizedBox(width: 4),
+          IconButton(
+            icon: const Icon(Icons.menu),
+            tooltip: 'Menu',
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                useSafeArea: true,
+                showDragHandle: true,
+                builder: (sheetCtx) {
+                  return SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.home_rounded),
+                          title: const Text('Home'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome) {
+                              onSelectSection?.call('home');
+                            } else {
+                              Navigator.pushNamed(context, '/');
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.person_rounded),
+                          title: const Text('About'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome && onSelectSection != null) {
+                              onSelectSection!('about');
+                            } else {
+                              Navigator.pushNamed(context, '/');
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.code_rounded),
+                          title: const Text('Skills'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome && onSelectSection != null) {
+                              onSelectSection!('skills');
+                            } else {
+                              Navigator.pushNamed(context, '/');
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.work_rounded),
+                          title: const Text('Experience'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome && onSelectSection != null) {
+                              onSelectSection!('experience');
+                            } else {
+                              Navigator.pushNamed(context, '/');
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.folder_rounded),
+                          title: const Text('Projects'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome && onSelectSection != null) {
+                              onSelectSection!('projects');
+                            } else {
+                              Navigator.pushNamed(context, '/projects');
+                            }
+                          },
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.mail_rounded),
+                          title: const Text('Contact'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            if (isHome && onSelectSection != null) {
+                              onSelectSection!('contact');
+                            } else {
+                              Navigator.pushNamed(context, '/');
+                            }
+                          },
+                        ),
+                        const Divider(height: 0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: const [
+                              _ThemeToggleButton(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -75,7 +194,7 @@ class AppNav extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              navButton('Home', 'home', isRoute: !isHome, icon: Icons.home_rounded),
+              navButton('Home', isHome ? 'home' : '/', isRoute: !isHome, icon: Icons.home_rounded),
               navButton('About', 'about', icon: Icons.person_rounded),
               navButton('Skills', 'skills', icon: Icons.code_rounded),
               navButton('Experience', 'experience', icon: Icons.work_rounded),
