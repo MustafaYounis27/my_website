@@ -31,6 +31,25 @@ class _HomePageState extends State<HomePage> {
     'contact': GlobalKey(),
   };
 
+  String _sectionLabel(String id) {
+    switch (id) {
+      case 'home':
+        return 'Home';
+      case 'about':
+        return 'About';
+      case 'skills':
+        return 'Skills';
+      case 'experience':
+        return 'Experience';
+      case 'projects':
+        return 'Projects';
+      case 'contact':
+        return 'Contact';
+      default:
+        return '';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -93,7 +112,16 @@ class _HomePageState extends State<HomePage> {
     final cvLoaded = context.watch<CVProvider>().isLoaded;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: context.isMobile
+            ? AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Text(
+                  _sectionLabel(_currentSection),
+                  key: ValueKey(_currentSection),
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              )
+            : const Text(''),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
