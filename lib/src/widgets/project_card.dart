@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import '../models/cv.dart';
+import '../core/analytics/analytics.dart';
 
 class ProjectCard extends StatefulWidget {
   final Project project;
@@ -248,7 +249,14 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                   children: [
                     for (final s in widget.project.stores)
                       FilledButton.tonalIcon(
-                        onPressed: () => launchUrlString(s, webOnlyWindowName: '_blank'),
+                        onPressed: () {
+                          trackEvent('project_link_click', params: {
+                            'project': widget.project.name,
+                            'url': s,
+                            'store': _getStoreName(s),
+                          });
+                          launchUrlString(s, webOnlyWindowName: '_blank');
+                        },
                         icon: Icon(_getStoreIcon(s), size: 16),
                         label: Text(_getStoreName(s)),
                       ),

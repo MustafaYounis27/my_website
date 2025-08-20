@@ -7,6 +7,7 @@ import '../core/seo.dart';
 import '../core/responsive.dart';
 import '../state/cv_provider.dart';
 import '../models/cv.dart';
+import '../core/analytics/analytics.dart';
 
 class ResumePage extends StatelessWidget {
   const ResumePage({super.key});
@@ -99,6 +100,9 @@ class ResumePage extends StatelessWidget {
     );
     
     // Save and download the PDF
+    trackEvent('cv_pdf_download', params: {
+      'source': 'resume_page',
+    });
     await Printing.sharePdf(
       bytes: await pdf.save(),
       filename: '${cv.name.replaceAll(' ', '_')}_Resume.pdf',
@@ -126,7 +130,10 @@ class ResumePage extends StatelessWidget {
               child: FilledButton.icon(
                 icon: const Icon(Icons.download),
                 label: const Text('Download PDF'),
-                onPressed: () => _generateAndDownloadPDF(cv),
+                onPressed: () {
+                  trackEvent('download_cv_click', params: {'from': 'resume_page'});
+                  _generateAndDownloadPDF(cv);
+                },
               ),
             )
         ],

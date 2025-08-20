@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../core/responsive.dart';
 import '../state/cv_provider.dart';
+import '../core/analytics/analytics.dart';
 
 class HeroSection extends StatefulWidget {
   final VoidCallback onContactTap;
@@ -98,7 +99,10 @@ class _HeroSectionState extends State<HeroSection> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               icon: const Icon(Icons.download_rounded),
-              onPressed: () => Navigator.pushNamed(context, '/resume'),
+              onPressed: () {
+                trackEvent('download_cv_click', params: {'from': 'hero'});
+                Navigator.pushNamed(context, '/resume');
+              },
               label: const Text('Download CV', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
           ),

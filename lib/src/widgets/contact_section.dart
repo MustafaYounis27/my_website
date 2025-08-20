@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../widgets/section_header.dart';
 import '../state/cv_provider.dart';
+import '../core/analytics/analytics.dart';
 
 class ContactSection extends StatefulWidget {
   const ContactSection({super.key});
@@ -52,7 +53,12 @@ class _ContactSectionState extends State<ContactSection> {
               gradient: LinearGradient(
                 colors: [Colors.blue.shade400, Colors.blue.shade600],
               ),
-              onPressed: () => launchUrlString('mailto:${cv.email}'),
+              onPressed: () {
+                trackEvent('contact_email_click', params: {
+                  'method': 'mailto',
+                });
+                launchUrlString('mailto:${cv.email}');
+              },
             ).animate().fadeIn(duration: 400.ms).scale(delay: 100.ms),
             _ContactButton(
               icon: Icons.phone_rounded,
@@ -61,7 +67,12 @@ class _ContactSectionState extends State<ContactSection> {
               gradient: LinearGradient(
                 colors: [Colors.green.shade400, Colors.green.shade600],
               ),
-              onPressed: () => launchUrlString('tel:${cv.phone}'),
+              onPressed: () {
+                trackEvent('contact_phone_click', params: {
+                  'method': 'tel',
+                });
+                launchUrlString('tel:${cv.phone}');
+              },
             ).animate().fadeIn(duration: 400.ms, delay: 100.ms).scale(delay: 200.ms),
             _ContactButton(
               icon: Icons.business_center_rounded,
@@ -70,7 +81,12 @@ class _ContactSectionState extends State<ContactSection> {
               gradient: LinearGradient(
                 colors: [Colors.blueAccent.shade400, Colors.blueAccent.shade700],
               ),
-              onPressed: () => launchUrlString(cv.linkedin, webOnlyWindowName: '_blank'),
+              onPressed: () {
+                trackEvent('outbound_click', params: {
+                  'network': 'linkedin',
+                });
+                launchUrlString(cv.linkedin, webOnlyWindowName: '_blank');
+              },
             ).animate().fadeIn(duration: 400.ms, delay: 200.ms).scale(delay: 300.ms),
             _ContactButton(
               icon: Icons.code_rounded,
@@ -79,7 +95,12 @@ class _ContactSectionState extends State<ContactSection> {
               gradient: LinearGradient(
                 colors: isDark ? [Colors.grey.shade600, Colors.grey.shade800] : [Colors.grey.shade700, Colors.grey.shade900],
               ),
-              onPressed: () => launchUrlString(cv.github, webOnlyWindowName: '_blank'),
+              onPressed: () {
+                trackEvent('outbound_click', params: {
+                  'network': 'github',
+                });
+                launchUrlString(cv.github, webOnlyWindowName: '_blank');
+              },
             ).animate().fadeIn(duration: 400.ms, delay: 300.ms).scale(delay: 400.ms),
           ],
         ),
@@ -217,6 +238,9 @@ class _ContactSectionState extends State<ContactSection> {
                                 if (_formKey.currentState!.validate()) {
                                   final subject = Uri.encodeComponent('Contact from ${_nameCtrl.text}');
                                   final body = Uri.encodeComponent('From: ${_nameCtrl.text} <${_emailCtrl.text}>\n\n${_messageCtrl.text}');
+                                  trackEvent('contact_form_send', params: {
+                                    'method': 'mailto',
+                                  });
                                   launchUrlString('mailto:${cv.email}?subject=$subject&body=$body');
                                   
                                   // Clear form after sending
