@@ -117,39 +117,42 @@ class Project {
   final String period;
   final String description;
   final List<String> technologies;
+  final List<String>? screenshots;
   final String? link;
   final String? github;
   final List<String> stores; // Keep for backward compatibility
-  
+
   Project({
     required this.name,
     this.image,
-    required this.period, 
-    required this.description, 
+    required this.period,
+    required this.description,
     required this.technologies,
+    this.screenshots,
     this.link,
     this.github,
     List<String>? stores,
-  }) : stores = stores ?? technologies; // Use technologies as stores for compatibility
-  
+  }) : stores = stores ?? [];
+
   factory Project.fromJson(Map<String, dynamic> json) => Project(
         name: json['name'] ?? '',
         image: json['image'],
         period: json['period'] ?? '',
         description: json['description'] ?? '',
-        technologies: (json['technologies'] as List<dynamic>? ?? 
-                      json['stores'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+        technologies: (json['technologies'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
+        screenshots: (json['screenshots'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
         link: json['link'],
         github: json['github'],
         stores: (json['stores'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
       );
-      
+
   Map<String, dynamic> toJson() => {
         'name': name,
         'image': image,
         'period': period,
         'description': description,
         'technologies': technologies,
+        'screenshots': screenshots,
         'stores': stores,
         'link': link,
         'github': github,

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 import '../models/cv.dart';
 import '../core/analytics/analytics.dart';
@@ -146,6 +149,34 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        if (widget.project.technologies.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: widget.project.technologies
+                                .take(4)
+                                .map(
+                                  (tech) => Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
+                                    ),
+                                    child: Text(
+                                      tech,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
                         const SizedBox(height: 16),
                         if (widget.project.stores.isNotEmpty)
                           Wrap(
@@ -205,7 +236,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
     if (url.contains('apple.com')) {
       return Icons.phone_iphone; // App Store icon
     } else if (url.contains('play.google.com')) {
-      return Icons.shop; // Play Store icon  
+      return Icons.shop; // Play Store icon
     } else if (url.contains('appgallery.huawei.com')) {
       return Icons.apps; // AppGallery icon
     } else if (url.contains('apps.microsoft.com')) {
@@ -227,7 +258,102 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
     return _domain(url);
   }
 
-  void _showProjectDialog(BuildContext context) {
+  static bool _isNetworkUrl(String s) {
+    return s.startsWith('http://') || s.startsWith('https://');
+  }
+
+  static String? _extractAppleAppId(String storeUrl) {
+    final match = RegExp(r'id(\d+)').firstMatch(storeUrl);
+    return match?.group(1);
+  }
+
+  static Future<List<String>> _fetchAppStoreScreenshots(List<String> storeUrls) async {
+    final appleUrls = storeUrls.where((u) => u.contains('apple.com')).toList();
+    if (appleUrls.isEmpty) return [];
+    final appId = _extractAppleAppId(appleUrls.first);
+    if (appId == null) return [];
+    try {
+      final uri = Uri.parse('https://itunes.apple.com/lookup?id=$appId&entity=software');
+      final response = await http.get(uri);
+      if (response.statusCode != 200) return [];
+      final data = jsonDecode(response.body) as Map<String, dynamic>?;
+      final results = data?['results'] as List<dynamic>?;
+      final first = results?.isNotEmpty == true ? results!.first as Map<String, dynamic>? : null;
+      final urls = first?['screenshotUrls'] as List<dynamic>?;
+      if (urls == null) return [];
+      return urls.take(10).map((e) => e.toString()).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Widget _buildScreenshotImage(BuildContext context, String urlOrPath) {
+    const size = 120.0;
+    final theme = Theme.of(context);
+    if (_isNetworkUrl(urlOrPath)) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          urlOrPath,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              width: size,
+              height: size,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: size,
+              height: size,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+              child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
+            );
+          },
+        ),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.asset(
+        urlOrPath,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: size,
+            height: size,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+            child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _showProjectDialog(BuildContext context) async {
+    List<String> screenshotUrls = (widget.project.screenshots ?? []).take(10).toList();
+    if (screenshotUrls.isEmpty && widget.project.stores.isNotEmpty) {
+      screenshotUrls = await _fetchAppStoreScreenshots(widget.project.stores);
+      screenshotUrls = screenshotUrls.take(10).toList();
+    }
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -235,13 +361,50 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(widget.project.period, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 8),
               Text(widget.project.description),
-              const SizedBox(height: 12),
+              if (screenshotUrls.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 128,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: screenshotUrls.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) => _buildScreenshotImage(context, screenshotUrls[index]),
+                  ),
+                ),
+              ],
+              if (widget.project.technologies.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                const Text('Technologies', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final tech in widget.project.technologies)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
+                        ),
+                        child: Text(
+                          tech,
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
               if (widget.project.stores.isNotEmpty) ...[
-                const Text('Links:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                const Text('Links', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -250,11 +413,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                     for (final s in widget.project.stores)
                       FilledButton.tonalIcon(
                         onPressed: () {
-                          trackEvent('project_link_click', params: {
-                            'project': widget.project.name,
-                            'url': s,
-                            'store': _getStoreName(s),
-                          });
+                          trackEvent('project_link_click', params: {'project': widget.project.name, 'url': s, 'store': _getStoreName(s)});
                           launchUrlString(s, webOnlyWindowName: '_blank');
                         },
                         icon: Icon(_getStoreIcon(s), size: 16),
