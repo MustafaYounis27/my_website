@@ -161,10 +161,13 @@ class _ContactSectionState extends State<ContactSection> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Text(
-                            'Send me a message',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              'Send me a message',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],

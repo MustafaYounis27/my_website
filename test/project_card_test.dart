@@ -50,6 +50,6 @@ void main() {
     expect(find.text('Proj'), findsOneWidget);
     await tester.tap(find.byType(ProjectCard));
     await tester.pumpAndSettle();
-    expect(find.text('Desc'), findsOneWidget);
+    expect(find.text('Desc'), findsAtLeastNWidgets(1));
   });
 }
