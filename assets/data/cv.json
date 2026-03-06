@@ -63,15 +63,55 @@
         "Soket IO"
       ],
       "screenshots": [
-        "assets/images/snapos.png",
-        "assets/images/pops_enterprise.png",
-        "assets/images/e_invoice_image.webp"
+        "assets/images/snapos/snapos-1.webp",
+        "assets/images/snapos/snapos-2.webp",
+        "assets/images/snapos/snapos-3.webp",
+        "assets/images/snapos/snapos-4.webp",
+        "assets/images/snapos/snapos-5.webp",
+        "assets/images/snapos/snapos-6.webp",
+        "assets/images/snapos/snapos-7.webp",
+        "assets/images/snapos/snapos-8.png",
+        "assets/images/snapos/snapos-9.png",
+        "assets/images/snapos/snapos-10.png"
       ],
       "stores": [
         "https://apps.apple.com/eg/app/snapos-fast-reliable-pos/id6448128426",
         "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud&pli=1",
         "https://appgallery.huawei.com/app/C108156765",
         "https://apps.microsoft.com/detail/9nj3gtplnk63?hl=en-US&gl=US"
+      ]
+    },
+    {
+      "name": "My TAI",
+      "image": "assets/images/my_tai.webp",
+      "period": "02/2025",
+      "description": "Customer management solution for The Address Investments.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Soket IO",
+        "Notifications",
+        "Charts"
+      ],
+      "screenshots": [
+        "assets/images/tai/tai-1.png",
+        "assets/images/tai/tai-2.png",
+        "assets/images/tai/tai-3.png",
+        "assets/images/tai/tai-4.png",
+        "assets/images/tai/tai-5.png",
+        "assets/images/tai/tai-6.png",
+        "assets/images/tai/tai-7.png",
+        "assets/images/tai/tai-8.png",
+        "assets/images/tai/tai-9.png",
+        "assets/images/tai/tai-10.png",
+        "assets/images/tai/tai-11.png",
+        "assets/images/tai/tai-12.png",
+        "assets/images/tai/tai-13.png",
+        "assets/images/tai/tai-14.png"
+      ],
+      "stores": [
+        "https://apps.apple.com/eg/app/my-tai/id1613010314",
+        "https://play.google.com/store/apps/details?id=com.theaddress.mytai&hl=en"
       ]
     },
     {
@@ -85,12 +125,7 @@
         "Firebase",
         "Soket IO"
       ],
-      "screenshots": [
-        "assets/images/pops_enterprise.png",
-        "assets/images/snapos.png",
-        "assets/images/e_invoice_image.webp",
-        "assets/images/my_tai.webp"
-      ],
+      "screenshots": [],
       "stores": [
         "https://apps.apple.com/eg/app/pops-restaurant/id1630635108?l=ar",
         "https://play.google.com/store/search?q=pops+restaurant+plus&c=apps",
@@ -109,36 +144,10 @@
         "QR-Reader",
         "KSA E-Invoice"
       ],
-      "screenshots": [
-        "assets/images/e_invoice_image.webp",
-        "assets/images/snapos.png",
-        "assets/images/pops_enterprise.png"
-      ],
+      "screenshots": [],
       "stores": [
         "https://apps.apple.com/us/app/e-invoice-qr-reader-ksa/id1580793042?platform=iphone",
         "https://play.google.com/store/apps/details?id=com.posbankbh.einvoiceqrreader&hl=en&gl=US"
-      ]
-    },
-    {
-      "name": "My TAI",
-      "image": "assets/images/my_tai.webp",
-      "period": "02/2025",
-      "description": "Customer management solution for The Address Investments.",
-      "technologies": [
-        "Flutter",
-        "Dart",
-        "Soket IO",
-        "Notifications",
-        "Charts"
-      ],
-      "screenshots": [
-        "assets/images/my_tai.webp",
-        "assets/images/e_invoice_image.webp",
-        "assets/images/snapos.png"
-      ],
-      "stores": [
-        "https://apps.apple.com/eg/app/my-tai/id1613010314",
-        "https://play.google.com/store/apps/details?id=com.theaddress.mytai&hl=en"
       ]
     },
     {
@@ -153,11 +162,7 @@
         "Notifications",
         "Charts"
       ],
-      "screenshots": [
-        "assets/images/marq_communities.webp",
-        "assets/images/cv_image.png",
-        "assets/images/snapos.png"
-      ],
+      "screenshots": [],
       "stores": [
         "https://apps.apple.com/sa/app/ovii/id6532629410"
       ]

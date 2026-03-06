@@ -69,6 +69,8 @@ flutter:
   assets:
     - assets/data/cv.json
     - assets/images/
+    - assets/images/snapos/
+    - assets/images/tai/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -300,11 +300,12 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
     }
   }
 
-  Widget _buildScreenshotImage(BuildContext context, String urlOrPath) {
+  Widget _buildScreenshotImage(BuildContext context, String urlOrPath, {VoidCallback? onTap}) {
     const size = 120.0;
     final theme = Theme.of(context);
+    Widget imageWidget;
     if (_isNetworkUrl(urlOrPath)) {
-      return ClipRRect(
+      imageWidget = ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.network(
           urlOrPath,
@@ -339,21 +340,98 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
           },
         ),
       );
+    } else {
+      imageWidget = ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          urlOrPath,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: size,
+              height: size,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+              child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
+            );
+          },
+        ),
+      );
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+    if (onTap != null) {
+      return GestureDetector(onTap: onTap, child: imageWidget);
+    }
+    return imageWidget;
+  }
+
+  void _showImagePreview(BuildContext context, String urlOrPath) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(24),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            GestureDetector(onTap: () => Navigator.of(ctx).pop(), child: _buildPreviewImage(ctx, urlOrPath)),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton.filled(
+                onPressed: () => Navigator.of(ctx).pop(),
+                icon: const Icon(Icons.close),
+                style: IconButton.styleFrom(backgroundColor: Colors.black54, foregroundColor: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewImage(BuildContext context, String urlOrPath) {
+    final theme = Theme.of(context);
+    if (_isNetworkUrl(urlOrPath)) {
+      return InteractiveViewer(
+        minScale: 0.5,
+        maxScale: 4.0,
+        child: Image.network(
+          urlOrPath,
+          fit: BoxFit.contain,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              padding: const EdgeInsets.all(48),
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(12)),
+              child: Icon(Icons.broken_image_outlined, size: 64, color: theme.colorScheme.error),
+            );
+          },
+        ),
+      );
+    }
+    return InteractiveViewer(
+      minScale: 0.5,
+      maxScale: 4.0,
       child: Image.asset(
         urlOrPath,
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return Container(
-            width: size,
-            height: size,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
-            child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
+            padding: const EdgeInsets.all(48),
+            decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(12)),
+            child: Icon(Icons.broken_image_outlined, size: 64, color: theme.colorScheme.error),
           );
         },
       ),
@@ -361,10 +439,10 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
   }
 
   Future<void> _showProjectDialog(BuildContext context) async {
-    List<String> screenshotUrls = (widget.project.screenshots ?? []).take(10).toList();
+    List<String> screenshotUrls = (widget.project.screenshots ?? []).toList();
     if (screenshotUrls.isEmpty && widget.project.stores.isNotEmpty) {
       screenshotUrls = await _fetchAppStoreScreenshots(widget.project.stores);
-      screenshotUrls = screenshotUrls.take(10).toList();
+      screenshotUrls = screenshotUrls.toList();
     }
     if (!context.mounted) return;
     showDialog(
@@ -392,7 +470,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                         children: [
                           for (var i = 0; i < screenshotUrls.length; i++) ...[
                             if (i > 0) const SizedBox(width: 8),
-                            _buildScreenshotImage(context, screenshotUrls[i]),
+                            _buildScreenshotImage(context, screenshotUrls[i], onTap: () => _showImagePreview(context, screenshotUrls[i])),
                           ],
                         ],
                       ),
