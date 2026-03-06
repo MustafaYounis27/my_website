@@ -87,6 +87,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Row(
                           children: [
@@ -141,76 +142,88 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Text(
-                          widget.project.description,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(height: 1.5, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (widget.project.technologies.isNotEmpty) ...[
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: widget.project.technologies
-                                .take(4)
-                                .map(
-                                  (tech) => Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
-                                    ),
-                                    child: Text(
-                                      tech,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w500,
-                                        color: Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const ClampingScrollPhysics(),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  widget.project.description,
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    height: 1.5,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
                                   ),
-                                )
-                                .toList(),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        if (widget.project.stores.isNotEmpty)
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: widget.project.stores
-                                .take(2)
-                                .map(
-                                  (store) => Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), width: 1),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(_getStoreIcon(store), size: 14, color: Theme.of(context).colorScheme.secondary),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          _getStoreName(store),
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color: Theme.of(context).colorScheme.secondary,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (widget.project.technologies.isNotEmpty) ...[
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 6,
+                                    children: widget.project.technologies
+                                        .take(4)
+                                        .map(
+                                          (tech) => Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
+                                            ),
+                                            child: Text(
+                                              tech,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                                color: Theme.of(context).colorScheme.primary,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                        )
+                                        .toList(),
                                   ),
-                                )
-                                .toList(),
+                                ],
+                                const SizedBox(height: 16),
+                                if (widget.project.stores.isNotEmpty)
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: widget.project.stores
+                                        .take(2)
+                                        .map(
+                                          (store) => Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), width: 1),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(_getStoreIcon(store), size: 14, color: Theme.of(context).colorScheme.secondary),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  _getStoreName(store),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Theme.of(context).colorScheme.secondary,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                              ],
+                            ),
                           ),
+                        ),
                       ],
                     ),
                   ),
@@ -358,73 +371,82 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(widget.project.name),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(widget.project.period, style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(height: 8),
-              Text(widget.project.description),
-              if (screenshotUrls.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 128,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: screenshotUrls.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) => _buildScreenshotImage(context, screenshotUrls[index]),
-                  ),
-                ),
-              ],
-              if (widget.project.technologies.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                const Text('Technologies', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final tech in widget.project.technologies)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
-                        ),
-                        child: Text(
-                          tech,
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.primary),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-              if (widget.project.stores.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                const Text('Links', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(widget.project.period, style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final s in widget.project.stores)
-                      FilledButton.tonalIcon(
-                        onPressed: () {
-                          trackEvent('project_link_click', params: {'project': widget.project.name, 'url': s, 'store': _getStoreName(s)});
-                          launchUrlString(s, webOnlyWindowName: '_blank');
-                        },
-                        icon: Icon(_getStoreIcon(s), size: 16),
-                        label: Text(_getStoreName(s)),
+                Text(widget.project.description),
+                if (screenshotUrls.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 128,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (var i = 0; i < screenshotUrls.length; i++) ...[
+                            if (i > 0) const SizedBox(width: 8),
+                            _buildScreenshotImage(context, screenshotUrls[i]),
+                          ],
+                        ],
                       ),
-                  ],
-                ),
+                    ),
+                  ),
+                ],
+                if (widget.project.technologies.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Text('Technologies', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final tech in widget.project.technologies)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
+                          ),
+                          child: Text(
+                            tech,
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+                if (widget.project.stores.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Text('Links', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final s in widget.project.stores)
+                        FilledButton.tonalIcon(
+                          onPressed: () {
+                            trackEvent('project_link_click', params: {'project': widget.project.name, 'url': s, 'store': _getStoreName(s)});
+                            launchUrlString(s, webOnlyWindowName: '_blank');
+                          },
+                          icon: Icon(_getStoreIcon(s), size: 16),
+                          label: Text(_getStoreName(s)),
+                        ),
+                    ],
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
+        ), // ConstrainedBox
         actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
       ),
     );
