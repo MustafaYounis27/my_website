@@ -5,7 +5,6 @@
 # Optional environment hints
 [build.environment]
   PUB_CACHE = "/opt/buildhome/.pub-cache"
-  NODE_OPTIONS = "--max-old-space-size=4096"
 
 # SPA-style routing so deep links work
 [[redirects]]
