@@ -8,7 +8,7 @@ fi
 export PATH="$HOME/flutter/bin:$PATH"
 
 # Enable web, fetch deps, and build
-flutter --version
-flutter config --enable-web
-flutter pub get
-flutter build web --release
+fvm flutter --version
+fvm flutter config --enable-web
+fvm flutter pub get
+fvm flutter build web --release
