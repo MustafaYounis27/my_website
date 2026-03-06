@@ -17,4 +17,4 @@ flutter precache --web
 
 # Dependencies and build
 flutter pub get
-flutter build web --release --web-renderer html
+flutter build web --release
