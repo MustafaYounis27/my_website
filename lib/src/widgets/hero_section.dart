@@ -38,11 +38,7 @@ class _HeroSectionState extends State<HeroSection> {
         decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.surface),
         padding: const EdgeInsets.all(8),
         child: ClipOval(
-          child: Image.asset(
-            'assets/images/cv_image.png',
-            fit: BoxFit.cover,
-            semanticLabel: 'Profile avatar',
-          ),
+          child: Image.asset('assets/images/cv_image.png', fit: BoxFit.cover, semanticLabel: 'Profile avatar'),
         ),
       ),
     );
@@ -124,9 +120,25 @@ class _HeroSectionState extends State<HeroSection> {
       ],
     );
 
+    // Header row: image | name / title
+    final headerRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        avatar.animate().fadeIn(duration: 800.ms, delay: 200.ms).scale(begin: const Offset(0.8, 0.8)),
+        SizedBox(width: context.isMobile ? 24 : 48),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [name, const SizedBox(height: 8), title],
+          ),
+        ),
+      ],
+    );
+
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [name, const SizedBox(height: 12), title, const SizedBox(height: 24), summary, const SizedBox(height: 32), buttons],
+      children: [headerRow, const SizedBox(height: 24), summary, const SizedBox(height: 32), buttons],
     );
 
     return Container(
@@ -141,22 +153,7 @@ class _HeroSectionState extends State<HeroSection> {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 48),
-        child: context.isMobile
-            ? Column(
-                children: [
-                  avatar.animate().fadeIn(duration: 800.ms, delay: 200.ms).scale(begin: const Offset(0.8, 0.8)),
-                  const SizedBox(height: 32),
-                  content,
-                ],
-              ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.1)
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  avatar.animate().fadeIn(duration: 800.ms, delay: 200.ms).scale(begin: const Offset(0.8, 0.8)).rotate(begin: -0.05),
-                  const SizedBox(width: 48),
-                  Expanded(child: content),
-                ],
-              ).animate().fadeIn(duration: 600.ms).slideX(begin: -0.05),
+        child: content.animate().fadeIn(duration: 600.ms).slideY(begin: 0.05),
       ),
     );
   }
