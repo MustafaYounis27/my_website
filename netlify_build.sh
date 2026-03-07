@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-FLUTTER_VERSION="3.35.4"
+FLUTTER_VERSION="3.38.3"
 FLUTTER_ARCHIVE="flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
 FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/${FLUTTER_VERSION}/${FLUTTER_ARCHIVE}"
 
