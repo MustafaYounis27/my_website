@@ -7,10 +7,6 @@ if [ ! -d "$HOME/flutter" ]; then
 fi
 export PATH="$HOME/flutter/bin:$PATH"
 
-# Ensure we're on the latest stable SDK
-flutter channel stable
-flutter upgrade --force
-
 # Enable web, fetch deps, and build
 flutter --version
 flutter config --enable-web
