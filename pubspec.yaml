@@ -40,7 +40,7 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.2
   flutter_animate: ^4.5.0
-  google_fonts: 6.2.1  # Pinned: 6.3.0 breaks dart2js web (FontWeight const map key)
+  google_fonts: ^8.2.1  # 6.x breaks dart2js on Dart 3.11 (FontWeight const map key)
   pdf: ^3.11.1
   printing: ^5.13.4
 
@@ -68,6 +68,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/data/cv.json
+    - assets/pdf/Mustafa_Younis_Resume.pdf
     - assets/images/
     - assets/images/snapos/
     - assets/images/tai/

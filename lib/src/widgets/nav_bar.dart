@@ -147,6 +147,14 @@ class AppNav extends StatelessWidget {
                           },
                         ),
                         ListTile(
+                          leading: const Icon(Icons.description_rounded),
+                          title: const Text('Resume'),
+                          onTap: () {
+                            Navigator.pop(sheetCtx);
+                            Navigator.pushNamed(context, '/resume');
+                          },
+                        ),
+                        ListTile(
                           leading: const Icon(Icons.mail_rounded),
                           title: const Text('Contact'),
                           onTap: () {
@@ -202,6 +210,7 @@ class AppNav extends StatelessWidget {
               isHome
                   ? navButton('Projects', 'projects', icon: Icons.folder_rounded)
                   : navButton('Projects', '/projects', isRoute: true, icon: Icons.folder_rounded),
+              navButton('Resume', '/resume', isRoute: true, icon: Icons.description_rounded),
               navButton('Contact', 'contact', icon: Icons.mail_rounded),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 8),

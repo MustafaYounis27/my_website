@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/responsive.dart';
 import '../state/cv_provider.dart';
 import '../core/analytics/analytics.dart';
+import '../core/resume_download.dart';
 
 class HeroSection extends StatefulWidget {
   final VoidCallback onContactTap;
@@ -97,7 +98,7 @@ class _HeroSectionState extends State<HeroSection> {
               icon: const Icon(Icons.download_rounded),
               onPressed: () {
                 trackEvent('download_cv_click', params: {'from': 'hero'});
-                Navigator.pushNamed(context, '/resume');
+                downloadResume();
               },
               label: const Text('Download CV', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
