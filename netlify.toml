@@ -22,7 +22,29 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Entry files change every deploy — never cache them as immutable (browsers kept
+# serving a broken flutter_bootstrap.js for up to a year after the fix).
 [[headers]]
-  for = "*.js"
+  for = "/index.html"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/flutter_bootstrap.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/main.dart.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/flutter_service_worker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/flutter.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
