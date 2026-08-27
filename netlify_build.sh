@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install Flutter SDK (cached between builds if HOME persists)
-if [ ! -d "$HOME/flutter" ]; then
-  git clone --quiet https://github.com/flutter/flutter.git -b stable "$HOME/flutter"
-fi
-export PATH="$HOME/flutter/bin:$PATH"
+BASE_HREF="${BASE_HREF:-/}"
 
-# Enable web, fetch deps, and build
+# Netlify installs Flutter into $HOME; GitHub Actions uses subosito/flutter-action instead.
+if [ "${SKIP_FLUTTER_INSTALL:-}" != "1" ]; then
+  if [ ! -d "$HOME/flutter" ]; then
+    git clone --quiet https://github.com/flutter/flutter.git -b stable "$HOME/flutter"
+  fi
+  export PATH="$HOME/flutter/bin:$PATH"
+  flutter config --enable-web
+fi
+
 flutter --version
-flutter config --enable-web
 flutter pub get
-flutter build web --release --no-wasm-dry-run --no-web-resources-cdn
+flutter build web --release --no-wasm-dry-run --no-web-resources-cdn --base-href="$BASE_HREF"
 
 # Flutter 3.41 can still inject an empty {} into buildConfig.builds without --no-wasm-dry-run;
 # if present it breaks FlutterLoader and the app never starts.
