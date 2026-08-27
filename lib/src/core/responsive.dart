@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Breakpoints {
   static const double mobile = 600;
   static const double tablet = 1024;
-  static const double contentMaxWidth = 1100;
+  static const double contentMaxWidth = 1160;
 }
 
 extension ContextScreen on BuildContext {

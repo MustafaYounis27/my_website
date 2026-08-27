@@ -1,160 +1,230 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../core/responsive.dart';
-import '../state/cv_provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+
 import '../core/analytics/analytics.dart';
+import '../core/design/app_surfaces.dart';
+import '../core/design/app_tokens.dart';
+import '../core/responsive.dart';
 import '../core/resume_download.dart';
+import '../state/cv_provider.dart';
+import 'common/gradient_text.dart';
+import 'common/reveal.dart';
 
-class HeroSection extends StatefulWidget {
+class HeroSection extends StatelessWidget {
   final VoidCallback onContactTap;
-  const HeroSection({super.key, required this.onContactTap});
+  final VoidCallback onWorkTap;
 
-  @override
-  State<HeroSection> createState() => _HeroSectionState();
-}
+  const HeroSection({super.key, required this.onContactTap, required this.onWorkTap});
 
-class _HeroSectionState extends State<HeroSection> {
   @override
   Widget build(BuildContext context) {
-    final cvProvider = context.watch<CVProvider>();
-    final cv = cvProvider.cv;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cv = context.watch<CVProvider>().cv;
+    if (cv == null) return const SizedBox.shrink();
 
-    // Profile avatar with gradient border
-    final avatar = Container(
-      width: context.isMobile ? 140 : 180,
-      height: context.isMobile ? 140 : 180,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-        ),
-        boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), blurRadius: 20, spreadRadius: 5)],
-      ),
-      padding: const EdgeInsets.all(4),
-      child: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.surface),
-        padding: const EdgeInsets.all(8),
-        child: ClipOval(
-          child: Image.asset('assets/images/cv_image.png', fit: BoxFit.cover, semanticLabel: 'Profile avatar'),
-        ),
-      ),
-    );
+    final theme = Theme.of(context);
+    final p = context.palette;
+    final isDesktop = context.isDesktop;
+    final textAlign = isDesktop ? TextAlign.start : TextAlign.center;
 
-    // Enhanced typography with gradient text for name
-    final name = ShaderMask(
-      shaderCallback: (bounds) =>
-          LinearGradient(colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary]).createShader(bounds),
-      child: Text(
-        cv?.name ?? '',
-        textAlign: TextAlign.left,
-        style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5),
-      ),
-    );
-
-    final title = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
-      ),
-      child: Text(
-        cv?.title ?? '',
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
-      ),
-    );
-
-    final summary = Text(
-      cv?.summary ?? '',
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
-    );
-
-    final buttons = Wrap(
-      spacing: 16,
-      runSpacing: 16,
+    final copy = Column(
+      crossAxisAlignment: isDesktop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Semantics(
-          label: 'Download CV as PDF',
-          button: true,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary]),
-              boxShadow: [
-                BoxShadow(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4)),
-              ],
-            ),
-            child: FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              icon: const Icon(Icons.download_rounded),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.place_outlined, size: 16, color: p.inkSubtle),
+            const SizedBox(width: AppSpace.xxs),
+            Text(cv.location, style: theme.textTheme.bodySmall),
+          ],
+        ),
+        const SizedBox(height: AppSpace.md),
+        Text(
+          cv.name,
+          textAlign: textAlign,
+          style: isDesktop ? theme.textTheme.displayMedium : theme.textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppSpace.xs),
+        GradientText(
+          cv.title,
+          textAlign: textAlign,
+          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: AppSpace.md),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 540),
+          child: Text(cv.summary, textAlign: textAlign, style: theme.textTheme.bodyLarge),
+        ),
+        const SizedBox(height: AppSpace.lg),
+        Wrap(
+          spacing: AppSpace.sm,
+          runSpacing: AppSpace.sm,
+          alignment: isDesktop ? WrapAlignment.start : WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _GradientButton(
+              icon: Icons.download_rounded,
+              label: 'Download CV',
               onPressed: () {
                 trackEvent('download_cv_click', params: {'from': 'hero'});
                 downloadResume();
               },
-              label: const Text('Download CV', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
-          ),
-        ),
-        Semantics(
-          label: 'Scroll to contact section',
-          button: true,
-          child: OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+            OutlinedButton.icon(
+              onPressed: onWorkTap,
+              icon: const Icon(Icons.folder_open_rounded, size: 18),
+              label: const Text('View my work'),
             ),
-            onPressed: widget.onContactTap,
-            icon: const Icon(Icons.mail_outline),
-            label: const Text('Get In Touch', style: TextStyle(fontWeight: FontWeight.w600)),
-          ),
+            OutlinedButton.icon(
+              onPressed: onContactTap,
+              icon: const Icon(Icons.mail_outline_rounded, size: 18),
+              label: const Text('Get in touch'),
+            ),
+            _IconLink(
+              icon: Icons.business_center_rounded,
+              tooltip: 'LinkedIn',
+              url: cv.linkedin,
+              network: 'linkedin',
+            ),
+            _IconLink(
+              icon: Icons.code_rounded,
+              tooltip: 'GitHub',
+              url: cv.github,
+              network: 'github',
+            ),
+          ],
         ),
       ],
     );
 
-    // Header row: image | name / title
-    final headerRow = Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        avatar.animate().fadeIn(duration: 800.ms, delay: 200.ms).scale(begin: const Offset(0.8, 0.8)),
-        SizedBox(width: context.isMobile ? 24 : 48),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [name, const SizedBox(height: 8), title],
-          ),
-        ),
-      ],
-    );
+    final portrait = _Portrait(size: isDesktop ? 260 : 180);
 
-    final content = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [headerRow, const SizedBox(height: 24), summary, const SizedBox(height: 32), buttons],
+    return Reveal(
+      child: isDesktop
+          ? Row(
+              children: [
+                Expanded(flex: 3, child: copy),
+                const SizedBox(width: AppSpace.xl),
+                Expanded(flex: 2, child: Center(child: portrait)),
+              ],
+            )
+          : Column(children: [portrait, const SizedBox(height: AppSpace.lg), copy]),
     );
+  }
+}
 
+class _Portrait extends StatelessWidget {
+  final double size;
+
+  const _Portrait({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
     return Container(
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        gradient: isDark
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.surface.withOpacity(0.95)],
-              )
-            : null,
+        gradient: LinearGradient(
+          colors: p.gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        boxShadow: [
+          BoxShadow(
+            color: p.gradient.first.withValues(alpha: 0.35),
+            blurRadius: 42,
+            offset: const Offset(0, 20),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 48),
-        child: content.animate().fadeIn(duration: 600.ms).slideY(begin: 0.05),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.xl - 3),
+        child: Image.asset(
+          'assets/images/cv_image.png',
+          fit: BoxFit.cover,
+          semanticLabel: 'Portrait photo',
+        ),
+      ),
+    );
+  }
+}
+
+class _GradientButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _GradientButton({required this.icon, required this.label, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: p.gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        boxShadow: [
+          BoxShadow(
+            color: p.gradient.first.withValues(alpha: 0.34),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: FilledButton.icon(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          shadowColor: Colors.transparent,
+        ),
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _IconLink extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final String url;
+  final String network;
+
+  const _IconLink({
+    required this.icon,
+    required this.tooltip,
+    required this.url,
+    required this.network,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    return Tooltip(
+      message: tooltip,
+      child: IconButton(
+        onPressed: url.isEmpty
+            ? null
+            : () {
+                trackEvent('outbound_click', params: {'network': network});
+                launchUrlString(url, webOnlyWindowName: '_blank');
+              },
+        icon: Icon(icon, size: 20),
+        style: IconButton.styleFrom(
+          foregroundColor: p.brand,
+          side: BorderSide(color: p.hairline),
+          padding: const EdgeInsets.all(AppSpace.sm),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+        ),
       ),
     );
   }

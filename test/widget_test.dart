@@ -1,18 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_website/src/widgets/section_header.dart';
+import 'package:my_website/src/core/app_theme.dart';
+import 'package:my_website/src/widgets/common/section_shell.dart';
 
 void main() {
-  testWidgets('SectionHeader renders title and subtitle', (WidgetTester tester) async {
-    await tester.pumpWidget(const MaterialApp(home: Scaffold(body: SectionHeader(title: 'Title', subtitle: 'Subtitle'))));
+  testWidgets('SectionShell renders eyebrow, title and subtitle', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: SectionShell(
+              index: '01',
+              label: 'TEST',
+              title: 'Title',
+              subtitle: 'Subtitle',
+              child: const Text('body'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('01 — TEST'), findsOneWidget);
     expect(find.text('Title'), findsOneWidget);
     expect(find.text('Subtitle'), findsOneWidget);
+    expect(find.text('body'), findsOneWidget);
   });
 }

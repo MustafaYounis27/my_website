@@ -7,6 +7,9 @@ class CV {
   final String linkedin;
   final String github;
   final String summary;
+  /// Optional override for the "years experience" stat. When absent the value
+  /// is computed from the earliest experience entry — see `CvStats`.
+  final int? yearsExperience;
   final String? profileImage; // Can be a URL or base64 string
   final Education education;
   final List<String> skills;
@@ -23,6 +26,7 @@ class CV {
     required this.linkedin,
     required this.github,
     required this.summary,
+    this.yearsExperience,
     this.profileImage,
     required this.education,
     required this.skills,
@@ -40,6 +44,7 @@ class CV {
         linkedin: json['linkedin'] ?? '',
         github: json['github'] ?? '',
         summary: json['summary'] ?? '',
+        yearsExperience: (json['yearsExperience'] as num?)?.toInt(),
         profileImage: json['profileImage'],
         education: Education.fromJson(json['education'] ?? {}),
         skills: (json['skills'] as List<dynamic>? ?? []).map((e) => e.toString()).toList(),
@@ -57,6 +62,7 @@ class CV {
         'linkedin': linkedin,
         'github': github,
         'summary': summary,
+        'yearsExperience': yearsExperience,
         'profileImage': profileImage,
         'education': education.toJson(),
         'skills': skills,

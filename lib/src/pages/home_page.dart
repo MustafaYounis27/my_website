@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../core/design/app_tokens.dart';
 import '../core/responsive.dart';
 import '../core/seo.dart';
 import '../state/cv_provider.dart';
-import '../widgets/nav_bar.dart';
-import '../widgets/hero_section.dart';
 import '../widgets/about_section.dart';
-import '../widgets/skills_section.dart';
-import '../widgets/experience_section.dart';
-import '../widgets/projects_section.dart';
+import '../widgets/common/aurora_background.dart';
 import '../widgets/contact_section.dart';
-
+import '../widgets/experience_section.dart';
+import '../widgets/hero_section.dart';
+import '../widgets/nav_bar.dart';
+import '../widgets/projects_section.dart';
+import '../widgets/site_footer.dart';
+import '../widgets/skills_section.dart';
+import '../widgets/stats_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,24 +35,14 @@ class _HomePageState extends State<HomePage> {
     'contact': GlobalKey(),
   };
 
-  String _sectionLabel(String id) {
-    switch (id) {
-      case 'home':
-        return 'Home';
-      case 'about':
-        return 'About';
-      case 'skills':
-        return 'Skills';
-      case 'experience':
-        return 'Experience';
-      case 'projects':
-        return 'Projects';
-      case 'contact':
-        return 'Contact';
-      default:
-        return '';
-    }
-  }
+  static const _labels = <String, String>{
+    'home': 'Home',
+    'about': 'About',
+    'skills': 'Skills',
+    'experience': 'Experience',
+    'projects': 'Projects',
+    'contact': 'Contact',
+  };
 
   @override
   void initState() {
@@ -61,7 +55,12 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
     final cv = context.watch<CVProvider>().cv;
     if (cv != null) {
-      Seo.update(title: '${cv.name} - ${cv.title}', description: cv.summary, imageUrl: '/icons/Icon-512.png', urlPath: '/');
+      Seo.update(
+        title: '${cv.name} - ${cv.title}',
+        description: cv.summary,
+        imageUrl: '/icons/Icon-512.png',
+        urlPath: '/',
+      );
     }
   }
 
@@ -73,103 +72,87 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onScroll() {
-    // Detect which section is currently in view
-    String newSection = 'home';
-    
+    var newSection = 'home';
     for (final entry in _keys.entries) {
-      final context = entry.value.currentContext;
-      if (context != null) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box != null) {
-          final position = box.localToGlobal(Offset.zero);
-          // Check if section is in viewport (with some offset for better UX)
-          if (position.dy <= 150) {
-            newSection = entry.key;
-          }
-        }
-      }
+      final ctx = entry.value.currentContext;
+      if (ctx == null) continue;
+      final box = ctx.findRenderObject() as RenderBox?;
+      if (box == null) continue;
+      if (box.localToGlobal(Offset.zero).dy <= 150) newSection = entry.key;
     }
-    
     if (newSection != _currentSection) {
-      setState(() {
-        _currentSection = newSection;
-      });
+      setState(() => _currentSection = newSection);
     }
   }
 
   void _scrollTo(String id) {
-    setState(() {
-      _currentSection = id;
-    });
-    final key = _keys[id];
-    if (key?.currentContext != null) {
-      Scrollable.ensureVisible(key!.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    setState(() => _currentSection = id);
+    final ctx = _keys[id]?.currentContext;
+    if (ctx != null) {
+      Scrollable.ensureVisible(ctx, duration: AppMotion.slow, curve: AppMotion.standard);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final cvLoaded = context.watch<CVProvider>().isLoaded;
+    final gap = context.isMobile ? AppSpace.sectionMobile : AppSpace.section;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: context.isMobile
             ? AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: AppMotion.fast,
                 child: Text(
-                  _sectionLabel(_currentSection),
+                  _labels[_currentSection] ?? '',
                   key: ValueKey(_currentSection),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               )
-            : const Text(''),
+            : const SizedBox.shrink(),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: AppNav(
-              onSelectSection: _scrollTo,
-              currentSection: _currentSection,
-            ),
+            padding: const EdgeInsets.only(right: AppSpace.xs),
+            child: AppNav(onSelectSection: _scrollTo, currentSection: _currentSection),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: CenteredConstrained(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(key: _keys['home']),
-              HeroSection(onContactTap: () => _scrollTo('contact')),
-              const SizedBox(height: 24),
-              SizedBox(key: _keys['about']),
-              const AboutSection(),
-              const SizedBox(height: 24),
-              SizedBox(key: _keys['skills']),
-              const SkillsSection(),
-              const SizedBox(height: 24),
-              SizedBox(key: _keys['experience']),
-              const ExperienceSection(),
-              const SizedBox(height: 24),
-              SizedBox(key: _keys['projects']),
-              const ProjectsSection(),
-              const SizedBox(height: 24),
-              SizedBox(key: _keys['contact']),
-              const ContactSection(),
-              const SizedBox(height: 48),
-            ],
+      body: AuroraBackground(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: CenteredConstrained(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(key: _keys['home'], height: kToolbarHeight + AppSpace.xl),
+                HeroSection(
+                  onContactTap: () => _scrollTo('contact'),
+                  onWorkTap: () => _scrollTo('projects'),
+                ),
+                const SizedBox(height: AppSpace.xl),
+                const StatsSection(),
+                SizedBox(height: gap),
+                SizedBox(key: _keys['about']),
+                const AboutSection(),
+                SizedBox(height: gap),
+                SizedBox(key: _keys['skills']),
+                const SkillsSection(),
+                SizedBox(height: gap),
+                SizedBox(key: _keys['experience']),
+                const ExperienceSection(),
+                SizedBox(height: gap),
+                SizedBox(key: _keys['projects']),
+                const ProjectsSection(),
+                SizedBox(height: gap),
+                SizedBox(key: _keys['contact']),
+                const ContactSection(),
+                const SizedBox(height: AppSpace.xxl),
+                const SiteFooter(),
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: cvLoaded
-          ? Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Text(
-                '© ${DateTime.now().year} — Built with Flutter',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            )
-          : null,
     );
   }
 }

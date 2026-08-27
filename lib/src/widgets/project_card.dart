@@ -5,6 +5,11 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
 import '../models/cv.dart';
 import '../core/analytics/analytics.dart';
+import '../core/design/app_surfaces.dart';
+import '../core/design/app_tokens.dart';
+import 'common/glass_card.dart';
+import 'common/hover_lift.dart';
+import 'common/tag_chip.dart';
 
 class ProjectCard extends StatefulWidget {
   final Project project;
@@ -14,224 +19,113 @@ class ProjectCard extends StatefulWidget {
   State<ProjectCard> createState() => _ProjectCardState();
 }
 
-class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class _ProjectCardState extends State<ProjectCard> {
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() => _isHovered = true);
-        _controller.forward();
-      },
-      onExit: (_) {
-        setState(() => _isHovered = false);
-        _controller.reverse();
-      },
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: _isHovered
-                    ? LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Theme.of(context).colorScheme.primary.withOpacity(0.05),
-                          Theme.of(context).colorScheme.secondary.withOpacity(0.02),
-                        ],
-                      )
-                    : null,
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(_isHovered ? 0.15 : 0.05),
-                    blurRadius: _isHovered ? 20 : 10,
-                    offset: Offset(0, _isHovered ? 8 : 4),
+    final theme = Theme.of(context);
+    final p = context.palette;
+    final project = widget.project;
+
+    return HoverLift(
+      child: GlassCard(
+        onTap: () => _showProjectDialog(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpace.xs),
+                  decoration: BoxDecoration(
+                    color: p.brandSoft,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                ],
-              ),
-              child: Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(
-                    color: _isHovered
-                        ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
-                        : Theme.of(context).colorScheme.outline.withOpacity(0.1),
-                    width: 1,
+                  child: project.image != null && project.image!.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.asset(
+                            project.image!,
+                            width: 32,
+                            height: 32,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.apps_rounded, size: 32, color: p.brand),
+                          ),
+                        )
+                      : Icon(Icons.apps_rounded, size: 32, color: p.brand),
+                ),
+                const SizedBox(width: AppSpace.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        project.name,
+                        style: theme.textTheme.titleMedium,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        project.period,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: p.brand,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () => _showProjectDialog(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: widget.project.image != null && widget.project.image!.isNotEmpty
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.asset(
-                                        widget.project.image!,
-                                        width: 32,
-                                        height: 32,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          // Fallback to icon if image fails to load
-                                          return Icon(Icons.apps_rounded, size: 32, color: Theme.of(context).colorScheme.primary);
-                                        },
-                                      ),
-                                    )
-                                  : Icon(Icons.apps_rounded, size: 32, color: Theme.of(context).colorScheme.primary),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.project.name,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  Text(
-                                    widget.project.period,
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: Theme.of(context).colorScheme.primary.withOpacity(_isHovered ? 1.0 : 0.5),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: SingleChildScrollView(
-                            physics: const ClampingScrollPhysics(),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                Icon(Icons.arrow_outward_rounded, size: 18, color: p.brand),
+              ],
+            ),
+            const SizedBox(height: AppSpace.sm),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      project.description,
+                      style: theme.textTheme.bodyMedium,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (project.technologies.isNotEmpty) ...[
+                      const SizedBox(height: AppSpace.sm),
+                      Wrap(
+                        spacing: AppSpace.xs,
+                        runSpacing: AppSpace.xs,
+                        children: [
+                          for (final tech in project.technologies.take(4)) TagChip(tech),
+                        ],
+                      ),
+                    ],
+                    if (project.stores.isNotEmpty) ...[
+                      const SizedBox(height: AppSpace.sm),
+                      Wrap(
+                        spacing: AppSpace.sm,
+                        runSpacing: AppSpace.xs,
+                        children: [
+                          for (final store in project.stores.take(2))
+                            Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  widget.project.description,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    height: 1.5,
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                                  ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (widget.project.technologies.isNotEmpty) ...[
-                                  const SizedBox(height: 12),
-                                  Wrap(
-                                    spacing: 6,
-                                    runSpacing: 6,
-                                    children: widget.project.technologies
-                                        .take(4)
-                                        .map(
-                                          (tech) => Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
-                                            ),
-                                            child: Text(
-                                              tech,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w500,
-                                                color: Theme.of(context).colorScheme.primary,
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ],
-                                const SizedBox(height: 16),
-                                if (widget.project.stores.isNotEmpty)
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: widget.project.stores
-                                        .take(2)
-                                        .map(
-                                          (store) => Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.3), width: 1),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(_getStoreIcon(store), size: 14, color: Theme.of(context).colorScheme.secondary),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  _getStoreName(store),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Theme.of(context).colorScheme.secondary,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
+                                Icon(_getStoreIcon(store), size: 14, color: p.inkSubtle),
+                                const SizedBox(width: AppSpace.xxs),
+                                Text(_getStoreName(store), style: theme.textTheme.bodySmall),
                               ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                        ],
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -319,7 +213,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
               height: size,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha:0.5),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: CircularProgressIndicator(
@@ -334,7 +228,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
               width: size,
               height: size,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha:0.3), borderRadius: BorderRadius.circular(8)),
               child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
             );
           },
@@ -353,7 +247,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
               width: size,
               height: size,
               alignment: Alignment.center,
-              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha:0.3), borderRadius: BorderRadius.circular(8)),
               child: Icon(Icons.broken_image_outlined, size: 32, color: theme.colorScheme.error),
             );
           },
@@ -414,7 +308,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
           errorBuilder: (context, error, stackTrace) {
             return Container(
               padding: const EdgeInsets.all(48),
-              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha:0.3), borderRadius: BorderRadius.circular(12)),
               child: Icon(Icons.broken_image_outlined, size: 64, color: theme.colorScheme.error),
             );
           },
@@ -430,7 +324,7 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
         errorBuilder: (context, error, stackTrace) {
           return Container(
             padding: const EdgeInsets.all(48),
-            decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withOpacity(0.3), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: theme.colorScheme.errorContainer.withValues(alpha:0.3), borderRadius: BorderRadius.circular(12)),
             child: Icon(Icons.broken_image_outlined, size: 64, color: theme.colorScheme.error),
           );
         },
@@ -489,9 +383,9 @@ class _ProjectCardState extends State<ProjectCard> with SingleTickerProviderStat
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 1),
+                            border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha:0.3), width: 1),
                           ),
                           child: Text(
                             tech,

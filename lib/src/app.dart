@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
+import 'core/design/app_tokens.dart';
 import 'pages/home_page.dart';
 import 'pages/projects_page.dart';
 import 'pages/resume_page.dart';
@@ -30,6 +31,8 @@ class MyPortfolioApp extends StatelessWidget {
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: theme.themeMode,
+            themeAnimationDuration: AppMotion.theme,
+            themeAnimationCurve: AppMotion.standard,
             initialRoute: '/',
             routes: {
               '/': (_) => const HomePage(),

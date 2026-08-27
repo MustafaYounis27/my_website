@@ -1,9 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/theme_provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../core/design/app_surfaces.dart';
+import '../core/design/app_tokens.dart';
 import '../core/responsive.dart';
+import 'common/glass_card.dart';
 
 class AppNav extends StatelessWidget {
   final void Function(String sectionId)? onSelectSection; // only used on home page
@@ -13,7 +15,6 @@ class AppNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isHome = ModalRoute.of(context)?.settings.name == '/';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isMobile = context.isMobile;
 
     Widget navButton(String label, String sectionOrRoute, {bool isRoute = false, IconData? icon}) {
@@ -187,41 +188,31 @@ class AppNav extends StatelessWidget {
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.black.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.1), width: 1),
-            boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), blurRadius: 20, spreadRadius: 2)],
+    return GlassCard(
+      blur: true,
+      radius: AppRadius.pill,
+      raised: false,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpace.sm, vertical: AppSpace.xs),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          navButton('Home', isHome ? 'home' : '/', isRoute: !isHome, icon: Icons.home_rounded),
+          navButton('About', 'about', icon: Icons.person_rounded),
+          navButton('Skills', 'skills', icon: Icons.code_rounded),
+          navButton('Experience', 'experience', icon: Icons.work_rounded),
+          isHome
+              ? navButton('Projects', 'projects', icon: Icons.folder_rounded)
+              : navButton('Projects', '/projects', isRoute: true, icon: Icons.folder_rounded),
+          navButton('Resume', '/resume', isRoute: true, icon: Icons.description_rounded),
+          navButton('Contact', 'contact', icon: Icons.mail_rounded),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: AppSpace.xs),
+            height: 24,
+            width: 1,
+            color: context.palette.hairline,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              navButton('Home', isHome ? 'home' : '/', isRoute: !isHome, icon: Icons.home_rounded),
-              navButton('About', 'about', icon: Icons.person_rounded),
-              navButton('Skills', 'skills', icon: Icons.code_rounded),
-              navButton('Experience', 'experience', icon: Icons.work_rounded),
-              // go to dedicated projects page when not on home
-              isHome
-                  ? navButton('Projects', 'projects', icon: Icons.folder_rounded)
-                  : navButton('Projects', '/projects', isRoute: true, icon: Icons.folder_rounded),
-              navButton('Resume', '/resume', isRoute: true, icon: Icons.description_rounded),
-              navButton('Contact', 'contact', icon: Icons.mail_rounded),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                height: 24,
-                width: 1,
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-              ),
-              const _ThemeToggleButton(),
-            ],
-          ),
-        ),
+          const _ThemeToggleButton(),
+        ],
       ),
     );
   }
