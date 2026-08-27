@@ -12,3 +12,9 @@ flutter --version
 flutter config --enable-web
 flutter pub get
 flutter build web --release --no-wasm-dry-run
+
+# Flutter 3.41 can still inject an empty {} into buildConfig.builds without --no-wasm-dry-run;
+# if present it breaks FlutterLoader and the app never starts.
+if [ -f build/web/flutter_bootstrap.js ]; then
+  sed -i 's/"mainJsPath":"main.dart.js"},{}]/"mainJsPath":"main.dart.js"}]/' build/web/flutter_bootstrap.js
+fi
