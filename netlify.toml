@@ -5,6 +5,13 @@
 [build.environment]
   FLUTTER_WEB_USE_SKIA = "true"
 
+# Always use HTTPS (http shows "not secure" and can stall mixed-content loads).
+[[redirects]]
+  from = "http://mustafa-younis-portfolio.netlify.app/*"
+  to = "https://mustafa-younis-portfolio.netlify.app/:splat"
+  status = 301
+  force = true
+
 # SPA-style routing so deep links work
 [[redirects]]
   from = "/*"

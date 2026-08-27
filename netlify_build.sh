@@ -11,12 +11,14 @@ export PATH="$HOME/flutter/bin:$PATH"
 flutter --version
 flutter config --enable-web
 flutter pub get
-flutter build web --release --no-wasm-dry-run
+flutter build web --release --no-wasm-dry-run --no-web-resources-cdn
 
 # Flutter 3.41 can still inject an empty {} into buildConfig.builds without --no-wasm-dry-run;
 # if present it breaks FlutterLoader and the app never starts.
 if [ -f build/web/flutter_bootstrap.js ]; then
-  sed -i 's/"mainJsPath":"main.dart.js"},{}]/"mainJsPath":"main.dart.js"}]/' build/web/flutter_bootstrap.js
-  # Service worker is deprecated; skip registration so stale SW caches cannot block startup.
-  perl -0777 -i -pe 's/_flutter\.loader\.load\(\{\s*serviceWorkerSettings:\s*\{[^}]*\}\s*\}\);/_flutter.loader.load();/s' build/web/flutter_bootstrap.js
+  perl -0777 -i -pe '
+    s/"mainJsPath":"main\.dart\.js"},\{\}]/"mainJsPath":"main.dart.js"}]/g;
+    s/_flutter\.loader\.load\(\{\s*serviceWorkerSettings:\s*\{[^}]*\}\s*\}\);/_flutter.loader.load({config: {canvasKitBaseUrl: "canvaskit"}});/s;
+    s/_flutter\.loader\.load\(\);/_flutter.loader.load({config: {canvasKitBaseUrl: "canvaskit"}});/s;
+  ' build/web/flutter_bootstrap.js
 fi
