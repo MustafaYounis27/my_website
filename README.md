@@ -20,7 +20,7 @@ Features:
 - `assets/data/cv.json` — Portfolio content
 - `assets/images/` — Placeholder images (SVG)
 - `web/index.html` — SEO meta/PWA
-- `web/404.html` — GitHub Pages SPA fallback
+- `web/404.html` — SPA deep-link fallback
 
 ## Local Development
 1) Install Flutter (stable) and enable web: `flutter config --enable-web`
@@ -32,32 +32,31 @@ Features:
 - Optional Admin page: navigate to `/admin` in the app to edit JSON in-browser (stored locally).
 
 ## Build for Web
-```
-flutter build web --release
+```bash
+bash build_web.sh
 ```
 Output in `build/web/`.
 
-## Deploy
+## Deploy (Firebase Hosting)
 
-### GitHub Pages
-- Commit the repo and push.
-- Serve `build/web/` via Pages (e.g., gh-pages branch or docs/). The included `web/404.html` ensures deep-link fallback.
+Live site: **https://mustafa-younis-portfolio.web.app**
 
-### Firebase Hosting
-Prereqs: `npm i -g firebase-tools`, `firebase login`, `firebase init hosting` (public dir: `build/web`).
+### Manual
+Prereqs: `npm i -g firebase-tools`, `firebase login`
 
-Deploy script (builds then deploys):
-```
+```bash
 bash deploy.sh
 ```
 
+### Automatic (push to `main`)
+Set GitHub secret `FIREBASE_SERVICE_ACCOUNT` (Firebase service account JSON). The workflow in `.github/workflows/deploy-firebase.yml` builds and deploys on every push to `main`.
+
 ## Tests
-Run all tests:
-```
+```bash
 flutter test
 ```
 
 ## Notes
 - Theme preference is saved via `shared_preferences`.
-- Web URL strategy is path-based (no hash). Ensure your host serves `index.html` for unknown routes (we ship `web/404.html`).
+- Web URL strategy is path-based (no hash). Firebase Hosting rewrites unknown routes to `index.html` (`firebase.json`).
 - Replace placeholder images in `assets/images/` as needed.

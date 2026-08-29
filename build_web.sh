@@ -3,7 +3,7 @@ set -euo pipefail
 
 BASE_HREF="${BASE_HREF:-/}"
 
-# Netlify installs Flutter into $HOME; GitHub Actions uses subosito/flutter-action instead.
+# Local/CI: skip when Flutter is already on PATH (e.g. GitHub Actions flutter-action).
 if [ "${SKIP_FLUTTER_INSTALL:-}" != "1" ]; then
   if [ ! -d "$HOME/flutter" ]; then
     git clone --quiet https://github.com/flutter/flutter.git -b stable "$HOME/flutter"

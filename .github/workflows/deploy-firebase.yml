@@ -24,7 +24,7 @@ jobs:
         env:
           SKIP_FLUTTER_INSTALL: "1"
           BASE_HREF: /
-        run: bash ./netlify_build.sh
+        run: bash ./build_web.sh
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:

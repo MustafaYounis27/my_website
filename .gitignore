@@ -44,9 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Local Netlify folder
-.netlify
-
 # Firebase local cache
 .firebase
 
