@@ -47,6 +47,9 @@ app.*.map.json
 # Local Netlify folder
 .netlify
 
+# Firebase local cache
+.firebase
+
 # FVM Version Cache
 .fvm/
 
