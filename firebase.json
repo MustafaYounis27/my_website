@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "mustafa-younis-portfolio",
     "public": "build/web",
     "ignore": [
       "firebase.json",
