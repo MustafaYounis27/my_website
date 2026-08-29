@@ -40,15 +40,6 @@
 
   <title>Mustafa Mahmoud — Senior Mobile Engineer</title>
   <link rel="manifest" href="manifest.json">
-  <style>
-    html, body { margin: 0; height: 100%; background: #f4f3fa; }
-    #boot-status {
-      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-      font: 600 16px/1.4 system-ui, -apple-system, Segoe UI, sans-serif; color: #4338ca;
-      z-index: 9999; pointer-events: none;
-    }
-    #boot-status.error { color: #b3261e; padding: 24px; text-align: center; max-width: 520px; }
-  </style>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KD8EDT64BT"></script>
   <script>
@@ -59,32 +50,13 @@
   </script>
 </head>
 <body>
-  <div id="boot-status">Loading portfolio…</div>
   <script>
-    (function () {
-      var status = document.getElementById('boot-status');
-      function showError(msg) {
-        if (!status) return;
-        status.className = 'error';
-        status.textContent = msg;
-        status.style.pointerEvents = 'auto';
-      }
-      window.addEventListener('error', function (e) {
-        showError('Load error: ' + (e.message || 'unknown') + '. Try a hard refresh.');
-        console.error(e.error || e.message);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        regs.forEach(function (r) { r.unregister(); });
       });
-      window.addEventListener('unhandledrejection', function (e) {
-        var reason = e.reason && (e.reason.message || e.reason);
-        showError('Startup failed: ' + (reason || 'unknown') + '. Check Network tab.');
-        console.error(e.reason);
-      });
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          regs.forEach(function (r) { r.unregister(); });
-        });
-      }
-    })();
+    }
   </script>
-  <script src="flutter_bootstrap.js?v=4" async></script>
+  <script src="flutter_bootstrap.js?v=5" async></script>
 </body>
 </html>
