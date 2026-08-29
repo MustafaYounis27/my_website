@@ -17,7 +17,7 @@ class SiteFooter extends StatelessWidget {
     final year = DateTime.now().year;
 
     final left = Text('© $year ${cv?.name ?? ''}'.trim(), style: theme.textTheme.bodySmall);
-    const right = Text('Built with Flutter · Deployed on Netlify');
+    const right = Text('Built with Flutter');
 
     return Column(
       children: [
