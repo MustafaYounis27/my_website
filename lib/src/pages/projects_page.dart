@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/seo.dart';
+import '../core/site.dart';
 import '../core/responsive.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/projects_section.dart';
@@ -16,8 +17,8 @@ class ProjectsPage extends StatelessWidget {
       Seo.update(
         title: '${cv.name} — Projects',
         description: 'Selected projects by ${cv.name}',
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/projects',
+        imageUrl: Site.ogImage,
+        urlPath: Site.page('/projects'),
       );
     }
     return Scaffold(

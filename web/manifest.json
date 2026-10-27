@@ -1,11 +1,11 @@
 {
-    "name": "my_website",
-    "short_name": "my_website",
+    "name": "Mustafa Mahmoud Younis \u2014 Portfolio",
+    "short_name": "Mustafa Younis",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0B0A18",
+    "theme_color": "#4F46E5",
+    "description": "Portfolio of Mustafa Mahmoud Younis, Senior Mobile Engineer (Flutter).",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

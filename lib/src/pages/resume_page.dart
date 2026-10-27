@@ -5,6 +5,7 @@ import '../core/analytics/analytics.dart';
 import '../core/resume_download.dart';
 import '../core/responsive.dart';
 import '../core/seo.dart';
+import '../core/site.dart';
 import '../state/cv_provider.dart';
 import '../widgets/resume_viewer.dart';
 
@@ -31,8 +32,8 @@ class ResumePage extends StatelessWidget {
       Seo.update(
         title: '${cv.name} — Resume',
         description: cv.summary,
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/resume',
+        imageUrl: Site.ogImage,
+        urlPath: Site.page('/resume'),
       );
     }
 
