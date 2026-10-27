@@ -14,9 +14,11 @@ fi
 
 flutter --version
 flutter pub get
-flutter build web --release --no-wasm-dry-run --no-web-resources-cdn --base-href="$BASE_HREF"
+# --wasm emits a WebAssembly build plus the JS build; the loader picks wasm when
+# the browser supports it and falls back to JS otherwise.
+flutter build web --release --wasm --no-web-resources-cdn --base-href="$BASE_HREF"
 
-# Flutter 3.41 can still inject an empty {} into buildConfig.builds without --no-wasm-dry-run;
+# Older Flutter versions could inject an empty {} into buildConfig.builds;
 # if present it breaks FlutterLoader and the app never starts.
 if [ -f build/web/flutter_bootstrap.js ]; then
   perl -0777 -i -pe '

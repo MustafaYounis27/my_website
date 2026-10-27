@@ -52,4 +52,30 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Desc'), findsAtLeastNWidgets(1));
   });
+
+  testWidgets('Dialog shows case-study highlights and package links', (tester) async {
+    final project = Project(
+      name: 'Pkg',
+      period: '2025',
+      description: 'Desc',
+      highlights: const ['Problem: phone input was painful.'],
+      technologies: const ['Dart'],
+      link: 'https://pub.dev/packages/x',
+      github: 'https://github.com/a/x',
+    );
+    await tester.pumpWidget(
+      DefaultAssetBundle(
+        bundle: _TestSvgBundle(),
+        child: MaterialApp(
+          home: Scaffold(body: SizedBox(height: 300, child: ProjectCard(project: project))),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(ProjectCard));
+    await tester.pumpAndSettle();
+    expect(find.text('Problem: phone input was painful.'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'pub.dev'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'GitHub'), findsOneWidget);
+  });
 }

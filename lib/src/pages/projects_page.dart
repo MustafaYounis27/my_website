@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/seo.dart';
+import '../core/site.dart';
 import '../core/responsive.dart';
 import '../widgets/nav_bar.dart';
 import '../widgets/projects_section.dart';
+import '../widgets/site_footer.dart';
+import '../widgets/common/aurora_background.dart';
+import '../core/design/app_tokens.dart';
 import '../state/cv_provider.dart';
 
 class ProjectsPage extends StatelessWidget {
@@ -16,14 +20,26 @@ class ProjectsPage extends StatelessWidget {
       Seo.update(
         title: '${cv.name} — Projects',
         description: 'Selected projects by ${cv.name}',
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/projects',
+        imageUrl: Site.ogImage,
+        urlPath: Site.page('/projects'),
       );
     }
-    return Scaffold(
-      appBar: AppBar(title: const Text('Projects'), actions: const [Padding(padding: EdgeInsets.only(right: 8), child: AppNav())]),
-      body: const SingleChildScrollView(
-        child: CenteredConstrained(child: Padding(padding: EdgeInsets.symmetric(vertical: 24), child: ProjectsSection())),
+    return const Scaffold(
+      appBar: SiteHeader(),
+      body: AuroraBackground(
+        child: SingleChildScrollView(
+          child: CenteredConstrained(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: AppSpace.xl),
+                ProjectsSection(),
+                SizedBox(height: AppSpace.section),
+                SiteFooter(),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,27 +1,29 @@
 import '../models/cv.dart';
 
-/// The four numbers shown under the hero. Every one is derived from the CV —
+/// The numbers shown under the hero. Every one is derived from the CV —
 /// nothing here is hardcoded.
 class CvStats {
   final int years;
-  final int projects;
+  /// Projects with at least one store link, i.e. apps people can install.
+  final int appsShipped;
   final int stores;
-  final int technologies;
+  /// Taken verbatim from `cv.usersReached`; null hides the tile.
+  final String? usersReached;
 
   const CvStats({
     required this.years,
-    required this.projects,
+    required this.appsShipped,
     required this.stores,
-    required this.technologies,
+    required this.usersReached,
   });
 
   factory CvStats.from(CV cv, {DateTime? now}) {
     final today = now ?? DateTime.now();
     return CvStats(
       years: cv.yearsExperience ?? _computedYears(cv, today),
-      projects: cv.projects.length,
+      appsShipped: cv.projects.where((p) => p.stores.isNotEmpty).length,
       stores: _distinctStoreHosts(cv),
-      technologies: cv.skills.length,
+      usersReached: (cv.usersReached?.trim().isEmpty ?? true) ? null : cv.usersReached!.trim(),
     );
   }
 

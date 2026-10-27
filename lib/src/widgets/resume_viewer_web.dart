@@ -1,9 +1,8 @@
 // Web implementation: embed the actual PDF with the browser's native viewer.
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as web;
 
 import '../core/resume_file.dart';
 
@@ -24,12 +23,12 @@ class _ResumeViewerState extends State<ResumeViewer> {
     if (!_registered) {
       _registered = true;
       ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
-        return html.IFrameElement()
+        return web.HTMLIFrameElement()
           ..src = '${ResumeFile.webUrl}#view=FitH'
           ..style.border = 'none'
           ..style.width = '100%'
           ..style.height = '100%'
-          ..setAttribute('title', 'Resume PDF');
+          ..title = 'Resume PDF';
       });
     }
   }

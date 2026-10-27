@@ -13,11 +13,15 @@ class SkillGroup {
 abstract final class SkillCategories {
   static const _mobile = {
     'flutter', 'dart', 'android', 'ios', 'kotlin', 'java', 'swift', 'jetpack compose',
+    'bloc / cubit', 'provider', 'clean architecture', 'dependency injection (get_it, injectable)',
+    'go_router', 'push notifications (fcm)', 'google maps', 'localization (en / ar, rtl)',
+    'payment gateways',
   };
 
   static const _backend = {
     'firebase', 'sql', 'python', 'rest', 'rest api', 'graphql', 'socket io', 'soket io',
-    'sockets', 'node', 'c#', 'supabase',
+    'sockets', 'node', 'c#', 'supabase', 'dio / rest apis', 'remote config & analytics',
+    'local storage (hive, secure storage)', 'firebase hosting',
   };
 
   static List<SkillGroup> group(List<String> skills) {

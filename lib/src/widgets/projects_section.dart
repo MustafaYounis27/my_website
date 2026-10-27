@@ -12,7 +12,7 @@ import 'project_card.dart';
 class ProjectsSection extends StatelessWidget {
   const ProjectsSection({super.key});
 
-  static const double _cardHeight = 300;
+  static const double _cardHeight = 320;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ProjectsSection extends StatelessWidget {
       index: '04',
       label: 'WORK',
       title: 'Selected projects',
-      subtitle: 'Tap a card for screenshots and store links',
+      subtitle: 'Apps in the hands of real users — tap any card for the full story',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

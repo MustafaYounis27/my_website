@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://mustafa-younis-portfolio.web.app/sitemap.xml

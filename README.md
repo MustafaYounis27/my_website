@@ -1,6 +1,6 @@
-# Mustafa Mahmoud — Flutter Web Portfolio
+# Mustafa Mahmoud Younis — Flutter Web Portfolio
 
-A responsive, production-ready portfolio website for Mustafa Mahmoud (Senior Mobile Engineer) built with Flutter Web.
+A responsive, production-ready portfolio website for Mustafa Mahmoud Younis (Senior Mobile Engineer) built with Flutter Web.
 
 Features:
 - Dynamic content from `assets/data/cv.json`
@@ -8,8 +8,9 @@ Features:
 - Smooth section scrolling and sticky navigation
 - Projects with modal details and external links
 - Accessible UI (semantics, labels, contrast)
-- SEO meta tags and social preview
-- Admin JSON editor page (optional)
+- SEO: crawler-readable copy, JSON-LD, robots.txt, sitemap.xml and a 1200×630 social card (`web/og-image.jpg`)
+- WebAssembly build with automatic JS fallback
+- Admin JSON editor page (debug builds only)
 
 ## Project Structure
 - `lib/src/app.dart` — App root and routes
@@ -18,8 +19,8 @@ Features:
 - `lib/src/widgets/` — UI components (hero, navbar, sections)
 - `lib/src/pages/` — Pages (`HomePage`, `ProjectsPage`, `ResumePage`, `AdminPage`)
 - `assets/data/cv.json` — Portfolio content
-- `assets/images/` — Placeholder images (SVG)
-- `web/index.html` — SEO meta/PWA
+- `assets/images/` — Project icons and screenshots (WebP)
+- `web/index.html` — SEO meta, structured data, crawler copy and loading splash
 - `web/404.html` — SPA deep-link fallback
 
 ## Local Development
@@ -29,7 +30,14 @@ Features:
 
 ## Content Editing
 - Update `assets/data/cv.json` to change profile, experience, projects, etc.
-- Optional Admin page: navigate to `/admin` in the app to edit JSON in-browser (stored locally).
+- `headline` is the one-liner in the hero; `summary` is the longer story in About.
+- `availability` shows as a badge under your name; leave it empty to hide it.
+- `usersReached` feeds the "Users reached" stat; omit it to hide the tile.
+- `testimonials` (`quote`, `author`, `role`) renders a "What people say" section once it has entries.
+- Projects take optional `highlights` (case-study bullets), `link` and `github`.
+- After editing `cv.json`, regenerate the resume PDF so it matches: `python3 -m venv .venv && .venv/bin/pip install reportlab==4.2.5 && .venv/bin/python tool/build_resume.py`.
+- When you change content, also update the hidden `#seo` block and JSON-LD in `web/index.html` so search engines see the same text.
+- Admin page: run in debug (`flutter run -d chrome`) and open `/admin` to edit JSON in-browser. The route and stored overrides are disabled in release builds.
 
 ## Build for Web
 ```bash

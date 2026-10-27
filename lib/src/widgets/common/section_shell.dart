@@ -33,7 +33,21 @@ class SectionShell extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$index — $label', style: theme.textTheme.labelSmall),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 28,
+                    height: 2,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: p.gradient),
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpace.xs),
+                  Text('$index — $label', style: theme.textTheme.labelSmall),
+                ],
+              ),
               const SizedBox(height: AppSpace.xs),
               Text(
                 title,

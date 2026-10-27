@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../core/analytics/analytics.dart';
 import '../core/design/app_surfaces.dart';
 import '../core/design/app_tokens.dart';
+import '../core/responsive.dart';
 import '../models/cv.dart';
 import '../state/cv_provider.dart';
 import 'common/glass_card.dart';
@@ -20,7 +22,7 @@ class ContactSection extends StatelessWidget {
     if (cv == null) return const SizedBox.shrink();
 
     return SectionShell(
-      index: '05',
+      index: cv.testimonials.isEmpty ? '05' : '06',
       label: 'CONTACT',
       title: 'Get in touch',
       subtitle: 'The fastest way to reach me',
@@ -33,6 +35,17 @@ class ContactSection extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Copies the address and confirms. Works for visitors with no mail app set
+/// up, where `mailto:` silently does nothing.
+Future<void> _copyEmail(BuildContext context, String email) async {
+  trackEvent('contact_email_copy');
+  await Clipboard.setData(ClipboardData(text: email));
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Copied $email')),
+  );
 }
 
 class _CtaBand extends StatelessWidget {
@@ -49,17 +62,20 @@ class _CtaBand extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpace.lg, vertical: AppSpace.xl),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpace.lg,
+        vertical: context.isMobile ? AppSpace.xl : AppSpace.xxl,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: p.gradient,
+          colors: p.gradientStrong,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: [
           BoxShadow(
-            color: p.gradient.first.withValues(alpha: 0.32),
+            color: p.gradientStrong.first.withValues(alpha: 0.32),
             blurRadius: 38,
             offset: const Offset(0, 16),
           ),
@@ -70,7 +86,8 @@ class _CtaBand extends StatelessWidget {
           Text(
             "Let's build something together",
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+            style: (context.isMobile ? theme.textTheme.headlineSmall : theme.textTheme.headlineLarge)
+                ?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: AppSpace.xs),
           Text(
@@ -92,6 +109,11 @@ class _CtaBand extends StatelessWidget {
                   trackEvent('contact_email_click', params: {'method': 'mailto'});
                   launchUrlString('mailto:${cv.email}');
                 },
+              ),
+              _CtaButton(
+                icon: Icons.copy_rounded,
+                label: 'Copy email',
+                onPressed: () => _copyEmail(context, cv.email),
               ),
               _CtaButton(
                 icon: Icons.chat_bubble_outline_rounded,
@@ -147,7 +169,7 @@ class _CtaButton extends StatelessWidget {
     if (filled) {
       return FilledButton.icon(
         onPressed: onPressed,
-        style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: p.brand),
+        style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: p.gradientStrong.first),
         icon: Icon(icon, size: 18),
         label: Text(label),
       );
@@ -202,7 +224,14 @@ class _ContactFormState extends State<_ContactForm> {
     _messageCtrl.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Opening email client…')),
+      SnackBar(
+        content: const Text('Opening your email app… Nothing opened? Copy my address instead.'),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(
+          label: 'Copy email',
+          onPressed: () => _copyEmail(context, widget.email),
+        ),
+      ),
     );
   }
 

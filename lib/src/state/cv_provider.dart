@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/cv.dart';
 
@@ -12,12 +12,15 @@ class CVProvider extends ChangeNotifier {
 
   Future<void> load() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-
-      final override = prefs.getString('cv_override_json');
-      if (override != null && override.trim().isNotEmpty) {
-        await loadFromString(override);
-        return;
+      // Overrides come from the debug-only /admin editor; release builds
+      // always show the shipped cv.json.
+      if (kDebugMode) {
+        final prefs = await SharedPreferences.getInstance();
+        final override = prefs.getString('cv_override_json');
+        if (override != null && override.trim().isNotEmpty) {
+          await loadFromString(override);
+          return;
+        }
       }
       final jsonStr = await rootBundle.loadString('assets/data/cv.json');
       await loadFromString(jsonStr);

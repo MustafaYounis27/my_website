@@ -5,7 +5,10 @@ import '../core/analytics/analytics.dart';
 import '../core/resume_download.dart';
 import '../core/responsive.dart';
 import '../core/seo.dart';
+import '../core/site.dart';
 import '../state/cv_provider.dart';
+import '../widgets/common/aurora_background.dart';
+import '../widgets/nav_bar.dart';
 import '../widgets/resume_viewer.dart';
 
 class ResumePage extends StatelessWidget {
@@ -19,7 +22,9 @@ class ResumePage extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not download the resume. Please try again.')),
+        const SnackBar(
+          content: Text('Could not download the resume. Please try again.'),
+        ),
       );
     }
   }
@@ -31,70 +36,72 @@ class ResumePage extends StatelessWidget {
       Seo.update(
         title: '${cv.name} — Resume',
         description: cv.summary,
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/resume',
+        imageUrl: Site.ogImage,
+        urlPath: Site.page('/resume'),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Resume'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: FilledButton.icon(
-              icon: const Icon(Icons.download_rounded),
-              label: const Text('Download PDF'),
-              onPressed: () => _download(context, from: 'resume_page_appbar'),
-            ),
-          ),
-        ],
-      ),
-      body: CenteredConstrained(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                cv?.name ?? 'Mustafa Younis',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              if (cv != null) Text(cv.title, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Container(
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                    ),
+      appBar: const SiteHeader(currentSection: 'resume'),
+      body: AuroraBackground(
+        child: CenteredConstrained(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  cv?.name ?? 'Mustafa Younis',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: const ResumeViewer(),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  FilledButton.icon(
-                    icon: const Icon(Icons.download_rounded),
-                    label: const Text('Download PDF'),
-                    onPressed: () => _download(context, from: 'resume_page_body'),
+                if (cv != null)
+                  Text(
+                    cv.title,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.open_in_new_rounded),
-                    label: const Text('Open in new tab'),
-                    onPressed: () {
-                      trackEvent('cv_pdf_open_tab', params: {'source': 'resume_page'});
-                      openResumeInNewTab();
-                    },
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: const ResumeViewer(),
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    FilledButton.icon(
+                      icon: const Icon(Icons.download_rounded),
+                      label: const Text('Download PDF'),
+                      onPressed: () =>
+                          _download(context, from: 'resume_page_body'),
+                    ),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.open_in_new_rounded),
+                      label: const Text('Open in new tab'),
+                      onPressed: () {
+                        trackEvent(
+                          'cv_pdf_open_tab',
+                          params: {'source': 'resume_page'},
+                        );
+                        openResumeInNewTab();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

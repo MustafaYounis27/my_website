@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'design/app_palette.dart';
 import 'design/app_surfaces.dart';
@@ -8,6 +7,10 @@ import 'design/app_tokens.dart';
 /// Builds both themes from an [AppPalette]. Nothing here hardcodes a colour —
 /// change `app_palette.dart` and both themes follow.
 abstract final class AppTheme {
+  /// Families bundled in pubspec.yaml under `assets/fonts/`.
+  static const _display = 'Poppins';
+  static const _body = 'Inter';
+
   static ThemeData get light => _build(AppPalette.light);
   static ThemeData get dark => _build(AppPalette.dark);
 
@@ -34,22 +37,28 @@ abstract final class AppTheme {
     );
 
     TextStyle display(double size, FontWeight weight) =>
-        GoogleFonts.poppins(fontSize: size, fontWeight: weight, color: p.ink, letterSpacing: -0.5);
+        TextStyle(
+          fontFamily: _display,
+          fontSize: size,
+          fontWeight: weight,
+          color: p.ink,
+          letterSpacing: -0.5,
+        );
 
-    final text = GoogleFonts.interTextTheme(base.textTheme).copyWith(
+    final text = base.textTheme.apply(fontFamily: _body).copyWith(
       displayLarge: display(56, FontWeight.w800),
       displayMedium: display(44, FontWeight.w800),
       displaySmall: display(34, FontWeight.w700),
       headlineLarge: display(30, FontWeight.w700),
       headlineMedium: display(24, FontWeight.w700),
       headlineSmall: display(20, FontWeight.w600),
-      titleLarge: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600, color: p.ink),
-      titleMedium: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: p.ink),
-      bodyLarge: GoogleFonts.inter(fontSize: 16, height: 1.65, color: p.inkMuted),
-      bodyMedium: GoogleFonts.inter(fontSize: 14, height: 1.6, color: p.inkMuted),
-      bodySmall: GoogleFonts.inter(fontSize: 12.5, height: 1.5, color: p.inkSubtle),
-      labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: p.ink),
-      labelSmall: GoogleFonts.inter(
+      titleLarge: TextStyle(fontFamily: _body, fontSize: 18, fontWeight: FontWeight.w600, color: p.ink),
+      titleMedium: TextStyle(fontFamily: _body, fontSize: 16, fontWeight: FontWeight.w600, color: p.ink),
+      bodyLarge: TextStyle(fontFamily: _body, fontSize: 16, height: 1.65, color: p.inkMuted),
+      bodyMedium: TextStyle(fontFamily: _body, fontSize: 14, height: 1.6, color: p.inkMuted),
+      bodySmall: TextStyle(fontFamily: _body, fontSize: 12.5, height: 1.5, color: p.inkSubtle),
+      labelLarge: TextStyle(fontFamily: _body, fontSize: 14, fontWeight: FontWeight.w600, color: p.ink),
+      labelSmall: TextStyle(fontFamily: _body, 
         fontSize: 11,
         fontWeight: FontWeight.w700,
         letterSpacing: 1.8,
@@ -61,7 +70,6 @@ abstract final class AppTheme {
     const buttonPadding = EdgeInsets.symmetric(horizontal: AppSpace.lg, vertical: AppSpace.md);
 
     return base.copyWith(
-      useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor: p.canvas,
       canvasColor: p.canvas,
