@@ -18,10 +18,11 @@ class StatsSection extends StatelessWidget {
 
     final stats = CvStats.from(cv);
     final tiles = <Widget>[
-      StatTile(value: '${stats.years}+', label: 'Years experience'),
-      StatTile(value: '${stats.appsShipped}', label: 'Apps shipped'),
-      if (stats.usersReached != null) StatTile(value: stats.usersReached!, label: 'Users reached'),
-      StatTile(value: '${stats.stores}', label: 'Platforms'),
+      StatTile(value: '${stats.years}+', label: 'Years experience', icon: Icons.workspace_premium_rounded),
+      StatTile(value: '${stats.appsShipped}', label: 'Apps shipped', icon: Icons.rocket_launch_rounded),
+      if (stats.usersReached != null)
+        StatTile(value: stats.usersReached!, label: 'Users reached', icon: Icons.groups_rounded),
+      StatTile(value: '${stats.stores}', label: 'Store platforms', icon: Icons.storefront_rounded),
     ];
     final columns = context.isMobile ? 2 : tiles.length;
 

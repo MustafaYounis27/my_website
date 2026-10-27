@@ -48,6 +48,10 @@ class AppPalette {
   /// The two stops of the signature gradient, 135°.
   final List<Color> gradient;
 
+  /// Deeper stops for filled surfaces (buttons, banners) that carry white
+  /// text. In dark mode `gradient` is pastel and fails contrast under white.
+  final List<Color> gradientStrong;
+
   /// Card shadow colour.
   final Color shadow;
 
@@ -67,6 +71,7 @@ class AppPalette {
     required this.brandSoft,
     required this.onBrand,
     required this.gradient,
+    required this.gradientStrong,
     required this.shadow,
   });
 
@@ -87,6 +92,7 @@ class AppPalette {
     brandSoft: Color(0x1A6366F1),
     onBrand: Color(0xFFFFFFFF),
     gradient: [Color(0xFF6366F1), Color(0xFFA855F7)],
+    gradientStrong: [Color(0xFF4F46E5), Color(0xFF9333EA)],
     shadow: Color(0x1714142B),
   );
 
@@ -107,6 +113,7 @@ class AppPalette {
     brandSoft: Color(0x24818CF8),
     onBrand: Color(0xFF0B0A18),
     gradient: [Color(0xFFA5B4FC), Color(0xFFC084FC)],
+    gradientStrong: [Color(0xFF4F46E5), Color(0xFF9333EA)],
     shadow: Color(0x80000000),
   );
 
@@ -131,6 +138,10 @@ class AppPalette {
       brandSoft: c(a.brandSoft, b.brandSoft),
       onBrand: c(a.onBrand, b.onBrand),
       gradient: [c(a.gradient[0], b.gradient[0]), c(a.gradient[1], b.gradient[1])],
+      gradientStrong: [
+        c(a.gradientStrong[0], b.gradientStrong[0]),
+        c(a.gradientStrong[1], b.gradientStrong[1]),
+      ],
       shadow: c(a.shadow, b.shadow),
     );
   }

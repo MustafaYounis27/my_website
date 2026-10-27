@@ -35,6 +35,14 @@ void main() {
     expect(_contrast(AppPalette.dark.brand, AppPalette.dark.canvas), greaterThan(4.5));
   });
 
+  test('white text clears WCAG AA on every strong-gradient stop in both themes', () {
+    for (final palette in [AppPalette.light, AppPalette.dark]) {
+      for (final stop in palette.gradientStrong) {
+        expect(_contrast(Colors.white, stop), greaterThan(4.5));
+      }
+    }
+  });
+
   test('lerp at the endpoints returns the endpoints', () {
     final a = AppPalette.lerp(AppPalette.light, AppPalette.dark, 0);
     final b = AppPalette.lerp(AppPalette.light, AppPalette.dark, 1);

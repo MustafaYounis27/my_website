@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../core/analytics/analytics.dart';
 import '../core/design/app_surfaces.dart';
 import '../core/design/app_tokens.dart';
+import '../core/responsive.dart';
 import '../models/cv.dart';
 import '../state/cv_provider.dart';
 import 'common/glass_card.dart';
@@ -61,17 +62,20 @@ class _CtaBand extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpace.lg, vertical: AppSpace.xl),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpace.lg,
+        vertical: context.isMobile ? AppSpace.xl : AppSpace.xxl,
+      ),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: p.gradient,
+          colors: p.gradientStrong,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: [
           BoxShadow(
-            color: p.gradient.first.withValues(alpha: 0.32),
+            color: p.gradientStrong.first.withValues(alpha: 0.32),
             blurRadius: 38,
             offset: const Offset(0, 16),
           ),
@@ -82,7 +86,8 @@ class _CtaBand extends StatelessWidget {
           Text(
             "Let's build something together",
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white),
+            style: (context.isMobile ? theme.textTheme.headlineSmall : theme.textTheme.headlineLarge)
+                ?.copyWith(color: Colors.white),
           ),
           const SizedBox(height: AppSpace.xs),
           Text(
@@ -164,7 +169,7 @@ class _CtaButton extends StatelessWidget {
     if (filled) {
       return FilledButton.icon(
         onPressed: onPressed,
-        style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: p.brand),
+        style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: p.gradientStrong.first),
         icon: Icon(icon, size: 18),
         label: Text(label),
       );

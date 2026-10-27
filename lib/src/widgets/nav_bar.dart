@@ -1,188 +1,248 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../state/theme_provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+
 import '../core/design/app_surfaces.dart';
 import '../core/design/app_tokens.dart';
 import '../core/responsive.dart';
+import '../state/cv_provider.dart';
+import '../state/theme_provider.dart';
 import 'common/glass_card.dart';
+
+/// One navigation target. Sections scroll the home page; routes push a page.
+class NavItem {
+  final String id;
+  final String label;
+  final IconData icon;
+  final String? route;
+
+  const NavItem(this.id, this.label, this.icon, {this.route});
+}
+
+const navItems = <NavItem>[
+  NavItem('home', 'Home', Icons.home_rounded),
+  NavItem('about', 'About', Icons.person_rounded),
+  NavItem('skills', 'Skills', Icons.code_rounded),
+  NavItem('experience', 'Experience', Icons.work_rounded),
+  NavItem('projects', 'Projects', Icons.folder_rounded),
+  NavItem('resume', 'Resume', Icons.description_rounded, route: '/resume'),
+  NavItem('contact', 'Contact', Icons.mail_rounded),
+];
+
+/// Below this width the inline links don't fit next to the brand, so the
+/// header collapses to a menu button.
+const double kInlineNavMinWidth = 1100;
+
+/// Sticky site header: brand on the left, navigation on the right. Frosts and
+/// shows a reading-progress line once [controller] has scrolled.
+class SiteHeader extends StatelessWidget implements PreferredSizeWidget {
+  final ScrollController? controller;
+  final void Function(String sectionId)? onSelectSection;
+  final String? currentSection;
+
+  const SiteHeader({super.key, this.controller, this.onSelectSection, this.currentSection});
+
+  static const double height = 68;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(height);
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = this.controller;
+    if (controller == null) return _bar(context, scrolled: true, progress: null);
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final hasPosition = controller.hasClients && controller.position.hasContentDimensions;
+        final offset = hasPosition ? controller.offset : 0.0;
+        final max = hasPosition ? controller.position.maxScrollExtent : 0.0;
+        return _bar(
+          context,
+          scrolled: offset > 8,
+          progress: max > 0 ? (offset / max).clamp(0.0, 1.0) : 0.0,
+        );
+      },
+    );
+  }
+
+  Widget _bar(BuildContext context, {required bool scrolled, required double? progress}) {
+    final p = context.palette;
+
+    Widget bar = AnimatedContainer(
+      duration: AppMotion.fast,
+      height: height,
+      decoration: BoxDecoration(
+        color: scrolled ? p.canvas.withValues(alpha: 0.72) : Colors.transparent,
+        border: Border(
+          bottom: BorderSide(color: scrolled ? p.hairline : Colors.transparent),
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: Breakpoints.contentMaxWidth + 80),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpace.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: _Brand(onTap: () => _goHome(context)),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpace.md),
+                  AppNav(onSelectSection: onSelectSection, currentSection: currentSection),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (scrolled) {
+      bar = ClipRect(
+        child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16), child: bar),
+      );
+    }
+
+    return Stack(
+      children: [
+        bar,
+        if (progress != null)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FractionallySizedBox(
+                widthFactor: progress,
+                child: Container(
+                  height: 2,
+                  decoration: BoxDecoration(gradient: LinearGradient(colors: p.gradient)),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _goHome(BuildContext context) {
+    if (ModalRoute.of(context)?.settings.name == '/' && onSelectSection != null) {
+      onSelectSection!('home');
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    }
+  }
+}
+
+class _Brand extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _Brand({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final theme = Theme.of(context);
+    final name = context.watch<CVProvider>().cv?.name ?? '';
+    final words = name.split(' ').where((w) => w.isNotEmpty).toList();
+    final initials = words.isEmpty ? '' : '${words.first[0]}${words.length > 1 ? words.last[0] : ''}';
+    final shortName = words.length > 1 ? '${words.first} ${words.last}' : name;
+
+    return Semantics(
+      button: true,
+      label: 'Home',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpace.xxs),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: p.gradientStrong,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                  boxShadow: [
+                    BoxShadow(
+                      color: p.gradientStrong.first.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  initials,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpace.sm),
+              Flexible(
+                child: Text(
+                  shortName,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(fontFamily: 'Poppins'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class AppNav extends StatelessWidget {
   final void Function(String sectionId)? onSelectSection; // only used on home page
   final String? currentSection;
   const AppNav({super.key, this.onSelectSection, this.currentSection});
 
+  void _select(BuildContext context, NavItem item) {
+    final isHome = ModalRoute.of(context)?.settings.name == '/';
+    if (item.route != null) {
+      Navigator.pushNamed(context, item.route!);
+    } else if (isHome && onSelectSection != null) {
+      onSelectSection!(item.id);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isHome = ModalRoute.of(context)?.settings.name == '/';
-    final isMobile = context.isMobile;
+    final inline = MediaQuery.sizeOf(context).width >= kInlineNavMinWidth;
 
-    Widget navButton(String label, String sectionOrRoute, {bool isRoute = false, IconData? icon}) {
-      final isSelected = currentSection == sectionOrRoute;
-
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              if (isRoute) {
-                Navigator.pushNamed(context, sectionOrRoute);
-              } else if (isHome && onSelectSection != null) {
-                onSelectSection!(sectionOrRoute);
-              } else {
-                // Not on home and not a dedicated route -> go to home
-                Navigator.pushNamed(context, '/');
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : Colors.transparent,
-                border: isSelected ? Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1) : null,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (icon != null) ...[
-                    Icon(icon, size: 18, color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 6),
-                  ],
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, duration: 400.ms);
-    }
-
-    // Mobile: show compact actions (theme toggle + menu)
-    if (isMobile) {
+    if (!inline) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const _ThemeToggleButton(),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSpace.xxs),
           IconButton(
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Icons.menu_rounded),
             tooltip: 'Menu',
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                useSafeArea: true,
-                showDragHandle: true,
-                builder: (sheetCtx) {
-                  return SafeArea(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.home_rounded),
-                          title: const Text('Home'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome) {
-                              onSelectSection?.call('home');
-                            } else {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.person_rounded),
-                          title: const Text('About'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome && onSelectSection != null) {
-                              onSelectSection!('about');
-                            } else {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.code_rounded),
-                          title: const Text('Skills'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome && onSelectSection != null) {
-                              onSelectSection!('skills');
-                            } else {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.work_rounded),
-                          title: const Text('Experience'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome && onSelectSection != null) {
-                              onSelectSection!('experience');
-                            } else {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.folder_rounded),
-                          title: const Text('Projects'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome && onSelectSection != null) {
-                              onSelectSection!('projects');
-                            } else {
-                              Navigator.pushNamed(context, '/projects');
-                            }
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.description_rounded),
-                          title: const Text('Resume'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            Navigator.pushNamed(context, '/resume');
-                          },
-                        ),
-                        ListTile(
-                          leading: const Icon(Icons.mail_rounded),
-                          title: const Text('Contact'),
-                          onTap: () {
-                            Navigator.pop(sheetCtx);
-                            if (isHome && onSelectSection != null) {
-                              onSelectSection!('contact');
-                            } else {
-                              Navigator.pushNamed(context, '/');
-                            }
-                          },
-                        ),
-                        const Divider(height: 0),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              _ThemeToggleButton(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
+            onPressed: () => _openMenu(context),
           ),
         ],
       );
@@ -192,19 +252,16 @@ class AppNav extends StatelessWidget {
       blur: true,
       radius: AppRadius.pill,
       raised: false,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpace.sm, vertical: AppSpace.xs),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpace.xs, vertical: AppSpace.xxs),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          navButton('Home', isHome ? 'home' : '/', isRoute: !isHome, icon: Icons.home_rounded),
-          navButton('About', 'about', icon: Icons.person_rounded),
-          navButton('Skills', 'skills', icon: Icons.code_rounded),
-          navButton('Experience', 'experience', icon: Icons.work_rounded),
-          isHome
-              ? navButton('Projects', 'projects', icon: Icons.folder_rounded)
-              : navButton('Projects', '/projects', isRoute: true, icon: Icons.folder_rounded),
-          navButton('Resume', '/resume', isRoute: true, icon: Icons.description_rounded),
-          navButton('Contact', 'contact', icon: Icons.mail_rounded),
+          for (final item in navItems)
+            _NavLink(
+              item: item,
+              selected: currentSection == item.id,
+              onTap: () => _select(context, item),
+            ),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpace.xs),
             height: 24,
@@ -216,29 +273,95 @@ class AppNav extends StatelessWidget {
       ),
     );
   }
+
+  void _openMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetCtx) {
+        final p = sheetCtx.palette;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpace.sm, 0, AppSpace.sm, AppSpace.sm),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final item in navItems)
+                  ListTile(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.sm)),
+                    selected: currentSection == item.id,
+                    selectedTileColor: p.brandSoft,
+                    leading: Icon(item.icon),
+                    title: Text(item.label),
+                    trailing: item.route != null ? const Icon(Icons.arrow_outward_rounded, size: 18) : null,
+                    onTap: () {
+                      Navigator.pop(sheetCtx);
+                      _select(context, item);
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _ThemeToggleButton extends StatefulWidget {
+class _NavLink extends StatefulWidget {
+  final NavItem item;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _NavLink({required this.item, required this.selected, required this.onTap});
+
+  @override
+  State<_NavLink> createState() => _NavLinkState();
+}
+
+class _NavLinkState extends State<_NavLink> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final theme = Theme.of(context);
+    final active = widget.selected || _hovered;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: Semantics(
+        button: true,
+        selected: widget.selected,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          behavior: HitTestBehavior.opaque,
+          child: AnimatedContainer(
+            duration: AppMotion.fast,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: AppSpace.xs),
+            decoration: BoxDecoration(
+              color: widget.selected ? p.brandSoft : Colors.transparent,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+            ),
+            child: Text(
+              widget.item.label,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: active ? p.brand : p.inkMuted,
+                fontWeight: widget.selected ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ThemeToggleButton extends StatelessWidget {
   const _ThemeToggleButton();
-
-  @override
-  State<_ThemeToggleButton> createState() => _ThemeToggleButtonState();
-}
-
-class _ThemeToggleButtonState extends State<_ThemeToggleButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,38 +370,21 @@ class _ThemeToggleButtonState extends State<_ThemeToggleButton> with SingleTicke
     // even when ThemeMode is system.
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [Colors.indigo.withValues(alpha: 0.2), Colors.purple.withValues(alpha: 0.2)]
-              : [Colors.orange.withValues(alpha: 0.2), Colors.yellow.withValues(alpha: 0.2)],
+    return IconButton(
+      tooltip: 'Switch to ${isDark ? 'light' : 'dark'} theme',
+      onPressed: theme.toggle,
+      icon: AnimatedSwitcher(
+        duration: AppMotion.base,
+        transitionBuilder: (child, animation) => RotationTransition(
+          turns: Tween(begin: 0.75, end: 1.0).animate(animation),
+          child: FadeTransition(opacity: animation, child: child),
+        ),
+        child: Icon(
+          isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          key: ValueKey(isDark),
+          color: isDark ? const Color(0xFFFCD34D) : const Color(0xFFF59E0B),
         ),
       ),
-      child: IconButton(
-        tooltip: 'Toggle ${isDark ? 'light' : 'dark'} theme',
-        icon: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) {
-            return RotationTransition(
-              turns: animation,
-              child: FadeTransition(opacity: animation, child: child),
-            );
-          },
-          child: Icon(
-            isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-            key: ValueKey(isDark),
-            color: isDark ? Colors.yellow : Colors.orange,
-          ),
-        ),
-        onPressed: () {
-          _controller.forward(from: 0);
-          theme.toggle();
-        },
-      ),
-    ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.8, 0.8));
+    );
   }
 }

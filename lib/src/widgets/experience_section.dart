@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../core/design/app_surfaces.dart';
 import '../core/design/app_tokens.dart';
+import '../core/responsive.dart';
 import '../models/cv.dart';
 import '../state/cv_provider.dart';
 import 'common/glass_card.dart';
@@ -101,28 +102,41 @@ class _TimelineEntry extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(experience.role, style: theme.textTheme.titleLarge),
-                              const SizedBox(height: AppSpace.xxs),
-                              Text(
-                                '${experience.company} · ${experience.location}',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: p.brand,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                    // The period chip sits beside the role when there's room
+                    // and drops above it on phones. (No LayoutBuilder: this
+                    // lives inside IntrinsicHeight, which can't measure one.)
+                    Builder(
+                      builder: (context) {
+                        final header = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(experience.role, style: theme.textTheme.titleLarge),
+                            const SizedBox(height: AppSpace.xxs),
+                            Text(
+                              '${experience.company} · ${experience.location}',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: p.brand,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: AppSpace.xs),
-                        TagChip(experience.period, emphasized: isCurrent),
-                      ],
+                            ),
+                          ],
+                        );
+                        final chip = TagChip(experience.period, emphasized: isCurrent);
+                        if (context.isMobile) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [chip, const SizedBox(height: AppSpace.xs), header],
+                          );
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: header),
+                            const SizedBox(width: AppSpace.xs),
+                            chip,
+                          ],
+                        );
+                      },
                     ),
                     if (experience.highlights.isNotEmpty) const SizedBox(height: AppSpace.sm),
                     for (final highlight in experience.highlights)

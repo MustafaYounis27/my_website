@@ -16,6 +16,10 @@ void main() {
     // Use a wide surface so the AppBar nav doesn't overflow (default 800px is tight)
     tester.view.physicalSize = const Size(1200, 800);
     addTearDown(() => tester.view.resetPhysicalSize());
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    // The hero has looping motion; reduced motion lets pumpAndSettle finish.
 
     await tester.pumpWidget(
       MultiProvider(
@@ -34,8 +38,9 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('John Doe'), findsOneWidget);
-    expect(find.text('Senior Mobile Engineer'), findsOneWidget);
+    // Header brand, hero and footer all carry the name.
+    expect(find.text('John Doe'), findsWidgets);
+    expect(find.text('Senior Mobile Engineer'), findsWidgets);
   });
 
   testWidgets('Hero shows headline and availability; About keeps the summary', (tester) async {
@@ -46,6 +51,10 @@ void main() {
     );
     tester.view.physicalSize = const Size(1200, 800);
     addTearDown(() => tester.view.resetPhysicalSize());
+    // The hero has looping motion; reduced motion lets pumpAndSettle finish.
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
 
     await tester.pumpWidget(
       MultiProvider(
@@ -61,6 +70,7 @@ void main() {
     expect(find.text('Short pitch.'), findsOneWidget);
     expect(find.text('Open to roles'), findsOneWidget);
     expect(find.text('Summary.'), findsOneWidget);
-    expect(find.text('250K+'), findsOneWidget);
+    // Stats row and the floating hero badge.
+    expect(find.text('250K+'), findsWidgets);
   });
 }
