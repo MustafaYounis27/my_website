@@ -35,6 +35,7 @@ Features:
 - `usersReached` feeds the "Users reached" stat; omit it to hide the tile.
 - `testimonials` (`quote`, `author`, `role`) renders a "What people say" section once it has entries.
 - Projects take optional `highlights` (case-study bullets), `link` and `github`.
+- After editing `cv.json`, regenerate the resume PDF so it matches: `python3 -m venv .venv && .venv/bin/pip install reportlab==4.2.5 && .venv/bin/python tool/build_resume.py`.
 - When you change content, also update the hidden `#seo` block and JSON-LD in `web/index.html` so search engines see the same text.
 - Admin page: run in debug (`flutter run -d chrome`) and open `/admin` to edit JSON in-browser. The route and stored overrides are disabled in release builds.
 

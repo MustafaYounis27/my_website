@@ -62,10 +62,11 @@
       "company": "POSBANK ME",
       "role": "Flutter Developer",
       "period": "03/2022 - 02/2025",
-      "location": "Cairo",
+      "location": "Remote",
       "highlights": [
         "Built a customized POS system for restaurants and markets that reduced order processing time by 50% and increased client sales by 20%.",
         "Implemented real-time sales tracking and inventory features over Socket IO, reducing waste by 25%.",
+        "Developed reusable Flutter packages and native plugins for payment integrations and receipt printing, shared across projects.",
         "Shipped one Flutter codebase to four stores: App Store, Google Play, Huawei AppGallery and Microsoft Store.",
         "Built the KSA E-Invoice QR Reader, which grew to 250K+ active users."
       ]
@@ -191,7 +192,7 @@
     {
       "name": "E-Invoice QR Reader (KSA)",
       "image": "assets/images/e_invoice_image.webp",
-      "period": "07/2022 - 08/2022",
+      "period": "07/2022 - 01/2023",
       "description": "Reads Saudi ZATCA e-invoice QR codes, tracks transactions and visualizes expenses with exportable reports. 250K+ active users.",
       "technologies": [
         "Flutter",
@@ -228,7 +229,7 @@
       "name": "Ovii Care",
       "image": "assets/images/ovii_care.webp",
       "period": "01/2024 - 01/2025",
-      "description": "Female-centric health and wellness app with personalized tracking, expert guidance and in-app payments.",
+      "description": "Freelance project: female-centric health and wellness app with personalized tracking, expert guidance, in-app community and payments.",
       "technologies": [
         "Flutter",
         "Dart",
