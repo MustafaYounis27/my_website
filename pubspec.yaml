@@ -40,7 +40,6 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.3.2
   flutter_animate: ^4.5.0
-  google_fonts: ^8.2.1  # 6.x breaks dart2js on Dart 3.11 (FontWeight const map key)
   pdf: ^3.11.1
   printing: ^5.13.4
   web: ^1.1.2
@@ -85,6 +84,29 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  # Bundled so text renders in the intended faces on first paint, with no
+  # request to fonts.googleapis.com.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-400.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-500.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-600.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-700.ttf
+          weight: 700
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-500.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-600.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-700.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-800.ttf
+          weight: 800
   # fonts:
   #   - family: Schyler
   #     fonts:
