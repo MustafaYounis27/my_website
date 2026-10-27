@@ -1,5 +1,5 @@
 name: my_website
-description: "A new Flutter project."
+description: "Portfolio website of Mustafa Mahmoud Younis, Senior Mobile Engineer, built with Flutter Web."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -43,6 +43,7 @@ dependencies:
   google_fonts: ^8.2.1  # 6.x breaks dart2js on Dart 3.11 (FontWeight const map key)
   pdf: ^3.11.1
   printing: ^5.13.4
+  web: ^1.1.2
 
 dev_dependencies:
   flutter_test:
