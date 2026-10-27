@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_website/src/core/skill_categories.dart';
 
@@ -20,13 +23,18 @@ void main() {
   });
 
   test('every skill in the real CV list survives categorisation', () {
-    const skills = [
-      'Flutter', 'Android', 'Dart', 'Java', 'Kotlin', 'Python', 'Git',
-      'Firebase', 'OOP', 'CI/CD', 'Design Patterns', 'SOLID', 'Team Management',
-    ];
+    final skills = (json.decode(File('assets/data/cv.json').readAsStringSync())['skills'] as List)
+        .cast<String>();
     final all = SkillCategories.group(skills).expand((g) => g.skills).toList();
     expect(all.length, skills.length);
     expect(all.toSet(), skills.toSet());
+  });
+
+  test('the real CV keeps state management and architecture under Mobile', () {
+    final skills = (json.decode(File('assets/data/cv.json').readAsStringSync())['skills'] as List)
+        .cast<String>();
+    final mobile = SkillCategories.group(skills).firstWhere((g) => g.title == 'Mobile').skills;
+    expect(mobile, containsAll(['BLoC / Cubit', 'Clean Architecture', 'go_router']));
   });
 
   test('empty categories are omitted', () {

@@ -51,47 +51,59 @@ class HeroSection extends StatelessWidget {
           textAlign: textAlign,
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
         ),
+        if (cv.availability.isNotEmpty) ...[
+          const SizedBox(height: AppSpace.sm),
+          _AvailabilityBadge(text: cv.availability),
+        ],
         const SizedBox(height: AppSpace.md),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 540),
-          child: Text(cv.summary, textAlign: textAlign, style: theme.textTheme.bodyLarge),
+          child: Text(
+            cv.headline.isNotEmpty ? cv.headline : cv.summary,
+            textAlign: textAlign,
+            style: theme.textTheme.bodyLarge,
+          ),
         ),
         const SizedBox(height: AppSpace.lg),
         Wrap(
           spacing: AppSpace.sm,
           runSpacing: AppSpace.sm,
           alignment: isDesktop ? WrapAlignment.start : WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             _GradientButton(
-              icon: Icons.download_rounded,
-              label: 'Download CV',
+              icon: Icons.folder_open_rounded,
+              label: 'View my work',
+              onPressed: onWorkTap,
+            ),
+            OutlinedButton.icon(
               onPressed: () {
                 trackEvent('download_cv_click', params: {'from': 'hero'});
                 downloadResume();
               },
+              icon: const Icon(Icons.download_rounded, size: 18),
+              label: const Text('Download CV'),
             ),
-            OutlinedButton.icon(
-              onPressed: onWorkTap,
-              icon: const Icon(Icons.folder_open_rounded, size: 18),
-              label: const Text('View my work'),
-            ),
-            OutlinedButton.icon(
+          ],
+        ),
+        const SizedBox(height: AppSpace.sm),
+        Wrap(
+          spacing: AppSpace.xs,
+          alignment: isDesktop ? WrapAlignment.start : WrapAlignment.center,
+          children: [
+            _IconLink(
+              icon: Icons.mail_outline_rounded,
+              tooltip: 'Get in touch',
               onPressed: onContactTap,
-              icon: const Icon(Icons.mail_outline_rounded, size: 18),
-              label: const Text('Get in touch'),
             ),
             _IconLink(
               icon: Icons.business_center_rounded,
               tooltip: 'LinkedIn',
-              url: cv.linkedin,
-              network: 'linkedin',
+              onPressed: _outbound(cv.linkedin, 'linkedin'),
             ),
             _IconLink(
               icon: Icons.code_rounded,
               tooltip: 'GitHub',
-              url: cv.github,
-              network: 'github',
+              onPressed: _outbound(cv.github, 'github'),
             ),
           ],
         ),
@@ -110,6 +122,51 @@ class HeroSection extends StatelessWidget {
               ],
             )
           : Column(children: [portrait, const SizedBox(height: AppSpace.lg), copy]),
+    );
+  }
+
+  static VoidCallback? _outbound(String url, String network) {
+    if (url.isEmpty) return null;
+    return () {
+      trackEvent('outbound_click', params: {'network': network});
+      launchUrlString(url, webOnlyWindowName: '_blank');
+    };
+  }
+}
+
+class _AvailabilityBadge extends StatelessWidget {
+  final String text;
+
+  const _AvailabilityBadge({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final p = context.palette;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpace.sm, vertical: AppSpace.xxs),
+      decoration: BoxDecoration(
+        color: p.brandSoft,
+        borderRadius: BorderRadius.circular(AppRadius.pill),
+        border: Border.all(color: p.hairline),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(color: Color(0xFF22C55E), shape: BoxShape.circle),
+          ),
+          const SizedBox(width: AppSpace.xs),
+          Flexible(
+            child: Text(
+              text,
+              style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -144,7 +201,7 @@ class _Portrait extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.xl - 3),
         child: Image.asset(
-          'assets/images/cv_image.png',
+          'assets/images/cv_image.jpg',
           fit: BoxFit.cover,
           semanticLabel: 'Portrait photo',
         ),
@@ -196,15 +253,9 @@ class _GradientButton extends StatelessWidget {
 class _IconLink extends StatelessWidget {
   final IconData icon;
   final String tooltip;
-  final String url;
-  final String network;
+  final VoidCallback? onPressed;
 
-  const _IconLink({
-    required this.icon,
-    required this.tooltip,
-    required this.url,
-    required this.network,
-  });
+  const _IconLink({required this.icon, required this.tooltip, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -212,12 +263,7 @@ class _IconLink extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: IconButton(
-        onPressed: url.isEmpty
-            ? null
-            : () {
-                trackEvent('outbound_click', params: {'network': network});
-                launchUrlString(url, webOnlyWindowName: '_blank');
-              },
+        onPressed: onPressed,
         icon: Icon(icon, size: 20),
         style: IconButton.styleFrom(
           foregroundColor: p.brand,

@@ -19,11 +19,11 @@ class StatsSection extends StatelessWidget {
     final stats = CvStats.from(cv);
     final tiles = <Widget>[
       StatTile(value: '${stats.years}+', label: 'Years experience'),
-      StatTile(value: '${stats.projects}', label: 'Projects shipped'),
-      StatTile(value: '${stats.stores}', label: 'App stores'),
-      StatTile(value: '${stats.technologies}', label: 'Technologies'),
+      StatTile(value: '${stats.appsShipped}', label: 'Apps shipped'),
+      if (stats.usersReached != null) StatTile(value: stats.usersReached!, label: 'Users reached'),
+      StatTile(value: '${stats.stores}', label: 'Platforms'),
     ];
-    final columns = context.isMobile ? 2 : 4;
+    final columns = context.isMobile ? 2 : tiles.length;
 
     return Reveal(
       delay: AppMotion.stagger,

@@ -10,6 +10,7 @@ import '../core/design/app_tokens.dart';
 import 'common/glass_card.dart';
 import 'common/hover_lift.dart';
 import 'common/tag_chip.dart';
+import 'featured_project_card.dart';
 
 class ProjectCard extends StatefulWidget {
   final Project project;
@@ -102,13 +103,13 @@ class _ProjectCardState extends State<ProjectCard> {
                         ],
                       ),
                     ],
-                    if (project.stores.isNotEmpty) ...[
+                    if (project.allLinks.isNotEmpty) ...[
                       const SizedBox(height: AppSpace.sm),
                       Wrap(
                         spacing: AppSpace.sm,
                         runSpacing: AppSpace.xs,
                         children: [
-                          for (final store in project.stores.take(2))
+                          for (final store in project.allLinks.take(2))
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -130,40 +131,9 @@ class _ProjectCardState extends State<ProjectCard> {
     );
   }
 
-  String _domain(String url) {
-    try {
-      final uri = Uri.parse(url);
-      return uri.host.replaceFirst('www.', '');
-    } catch (_) {
-      return url;
-    }
-  }
+  IconData _getStoreIcon(String url) => FeaturedProjectCard.storeIcon(url);
 
-  IconData _getStoreIcon(String url) {
-    if (url.contains('apple.com')) {
-      return Icons.phone_iphone; // App Store icon
-    } else if (url.contains('play.google.com')) {
-      return Icons.shop; // Play Store icon
-    } else if (url.contains('appgallery.huawei.com')) {
-      return Icons.apps; // AppGallery icon
-    } else if (url.contains('apps.microsoft.com')) {
-      return Icons.window; // Microsoft Store icon
-    }
-    return Icons.link; // Default icon
-  }
-
-  String _getStoreName(String url) {
-    if (url.contains('apple.com')) {
-      return 'App Store';
-    } else if (url.contains('play.google.com')) {
-      return 'Play Store';
-    } else if (url.contains('appgallery.huawei.com')) {
-      return 'AppGallery';
-    } else if (url.contains('apps.microsoft.com')) {
-      return 'Microsoft Store';
-    }
-    return _domain(url);
-  }
+  String _getStoreName(String url) => FeaturedProjectCard.storeName(url);
 
   static bool _isNetworkUrl(String s) {
     return s.startsWith('http://') || s.startsWith('https://');
@@ -339,6 +309,7 @@ class _ProjectCardState extends State<ProjectCard> {
       screenshotUrls = screenshotUrls.toList();
     }
     if (!context.mounted) return;
+    final links = widget.project.allLinks;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -353,6 +324,16 @@ class _ProjectCardState extends State<ProjectCard> {
                 Text(widget.project.period, style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 8),
                 Text(widget.project.description),
+                for (final point in widget.project.highlights) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('•  '),
+                      Expanded(child: Text(point)),
+                    ],
+                  ),
+                ],
                 if (screenshotUrls.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   SizedBox(
@@ -395,7 +376,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     ],
                   ),
                 ],
-                if (widget.project.stores.isNotEmpty) ...[
+                if (links.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const Text('Links', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
@@ -403,7 +384,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      for (final s in widget.project.stores)
+                      for (final s in links)
                         FilledButton.tonalIcon(
                           onPressed: () {
                             trackEvent('project_link_click', params: {'project': widget.project.name, 'url': s, 'store': _getStoreName(s)});

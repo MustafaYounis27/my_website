@@ -1,13 +1,16 @@
 {
-  "name": "Mustafa Mahmoud",
+  "name": "Mustafa Mahmoud Younis",
   "title": "Senior Mobile Engineer",
+  "headline": "I build and ship Flutter apps that real businesses run on — POS systems, CRMs and real-estate platforms used by hundreds of thousands of people.",
+  "availability": "Open to senior Flutter roles · Remote or Cairo",
   "email": "mustafamahmoudyounis@gmail.com",
   "phone": "+201006989546",
   "location": "New Cairo, Cairo, Egypt",
   "linkedin": "https://www.linkedin.com/in/mustafa-mahmoud-younis",
   "github": "https://github.com/MustafaYounis27",
-  "summary": "Senior mobile engineer specializing in building high-quality mobile applications using Flutter, with over 5 years of experience delivering cross-platform solutions across various domains, including POS systems, CRM tools, and service-based applications. And worked on products from early concept to production and continuous improvement, always focusing on scalability, performance, and a smooth user experience.",
+  "summary": "Senior mobile engineer with 5+ years of experience building cross-platform products in Flutter. I've taken apps from early concept to production and kept improving them after launch, across POS systems, CRM tools, real-estate platforms and service apps. Today I lead mobile development at The Address Investments, where I own the shared architecture behind several store apps and mentor the team that builds on it. I care most about scalable architecture, fast and reliable apps, and a user experience that feels effortless.",
   "yearsExperience": 5,
+  "usersReached": "250K+",
   "education": {
     "degree": "Bachelor Degree, Systems and Computers Engineering",
     "university": "Al-Azhar University",
@@ -16,18 +19,30 @@
   },
   "skills": [
     "Flutter",
-    "Android",
     "Dart",
-    "Java",
+    "Android",
     "Kotlin",
-    "Python",
-    "Git",
+    "Java",
+    "BLoC / Cubit",
+    "Provider",
+    "Clean Architecture",
+    "Dependency Injection (get_it, injectable)",
+    "go_router",
+    "Dio / REST APIs",
+    "Socket IO",
     "Firebase",
-    "OOP",
-    "CI/CD",
-    "Design Patterns",
-    "SOLID",
-    "Team Management"
+    "Push Notifications (FCM)",
+    "Remote Config & Analytics",
+    "Local Storage (Hive, Secure Storage)",
+    "Payment Gateways",
+    "Google Maps",
+    "Localization (EN / AR, RTL)",
+    "Unit & Widget Testing",
+    "CI/CD (GitHub Actions)",
+    "Firebase Hosting",
+    "Git",
+    "SOLID & Design Patterns",
+    "Python"
   ],
   "experience": [
     {
@@ -36,8 +51,11 @@
       "period": "02/2025 - Present",
       "location": "Cairo",
       "highlights": [
-        "Manage daily IT operations and safeguard employee data through advanced security measures.",
-        "Install and maintain hardware and software; lead technical decisions and mentoring."
+        "Lead mobile development across the company's store apps: Address Circle (10K+ downloads, 5★ on the App Store), My TAI (5K+ downloads, 4.5★ from 50+ ratings) and The MarQ.",
+        "Designed the shared Flutter base project the apps are built on: Clean Architecture, BLoC, dependency injection with get_it/injectable, go_router, Dio networking and a reusable widget library.",
+        "Integrated Firebase messaging, analytics and remote config, deep links, biometric login and in-app updates, keeping releases on iOS and Android consistent.",
+        "Published customized_country_phone_picker on pub.dev (160 pub points), an EN/AR phone input now used in the company apps.",
+        "Lead technical decisions, review code and mentor the mobile team."
       ]
     },
     {
@@ -46,8 +64,10 @@
       "period": "03/2022 - 02/2025",
       "location": "Cairo",
       "highlights": [
-        "Built customized POS system for restaurants and markets that reduced order processing time by 50%, increased client sales by 20%.",
-        "Implemented real-time sales tracking and inventory features reducing waste by 25%."
+        "Built a customized POS system for restaurants and markets that reduced order processing time by 50% and increased client sales by 20%.",
+        "Implemented real-time sales tracking and inventory features over Socket IO, reducing waste by 25%.",
+        "Shipped one Flutter codebase to four stores: App Store, Google Play, Huawei AppGallery and Microsoft Store.",
+        "Built the KSA E-Invoice QR Reader, which grew to 250K+ active users."
       ]
     }
   ],
@@ -56,12 +76,19 @@
       "name": "Snapos",
       "image": "assets/images/snapos.png",
       "period": "04/2022 - 02/2025",
-      "description": "Intuitive interface for restaurant staff; cloud-based item management and payment processing; improved efficiency and reduced order processing time by 50%.",
+      "description": "Cloud POS for restaurants and retail, running on phones, tablets and Windows terminals. Cut order processing time by 50%.",
+      "highlights": [
+        "Problem: restaurant staff needed one fast POS that works on the hardware they already own, from Android tablets to Windows counters.",
+        "My role: Flutter developer on the core app, from ordering flow to payments and cloud item management.",
+        "Hard part: keeping orders, sales and inventory in sync in real time over Socket IO across four platforms from one codebase.",
+        "Result: order processing time down 50%, client sales up 20%, shipped on App Store, Google Play, Huawei AppGallery and Microsoft Store."
+      ],
       "technologies": [
         "Flutter",
         "Dart",
         "Firebase",
-        "Soket IO"
+        "Socket IO",
+        "Windows"
       ],
       "screenshots": [
         "assets/images/snapos/snapos-1.webp",
@@ -71,27 +98,57 @@
         "assets/images/snapos/snapos-5.webp",
         "assets/images/snapos/snapos-6.webp",
         "assets/images/snapos/snapos-7.webp",
-        "assets/images/snapos/snapos-8.png",
-        "assets/images/snapos/snapos-9.png",
-        "assets/images/snapos/snapos-10.png"
+        "assets/images/snapos/snapos-8.webp",
+        "assets/images/snapos/snapos-9.webp",
+        "assets/images/snapos/snapos-10.webp"
       ],
       "stores": [
         "https://apps.apple.com/eg/app/snapos-fast-reliable-pos/id6448128426",
-        "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud&pli=1",
+        "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud",
         "https://appgallery.huawei.com/app/C108156765",
         "https://apps.microsoft.com/detail/9nj3gtplnk63?hl=en-US&gl=US"
       ]
     },
     {
-      "name": "My TAI",
-      "image": "assets/images/my_tai.webp",
-      "period": "02/2025",
-      "description": "Customer management solution for The Address Investments.",
+      "name": "Address Circle",
+      "image": "assets/images/address_circle.webp",
+      "period": "2025 - Present",
+      "description": "Real-estate platform that connects brokers and agents with The Address Investments' projects, with faster earning cycles and rewards. 10K+ downloads, 5★ on the App Store.",
+      "highlights": [
+        "Problem: brokers had no single place to find exclusive projects, submit leads and track their earnings.",
+        "My role: lead Flutter engineer, owning architecture, delivery and releases.",
+        "Hard part: a modular Clean Architecture + BLoC codebase with deep links, push notifications, remote config, biometric login and document scanning, all kept fast with skeleton loading and pagination.",
+        "Result: 10K+ downloads on Google Play and a 5★ App Store rating."
+      ],
       "technologies": [
         "Flutter",
-        "Dart",
-        "Soket IO",
-        "Notifications",
+        "BLoC",
+        "Clean Architecture",
+        "Firebase",
+        "go_router"
+      ],
+      "screenshots": [],
+      "stores": [
+        "https://apps.apple.com/eg/app/address-circle/id6771043713",
+        "https://play.google.com/store/apps/details?id=com.address.circle"
+      ]
+    },
+    {
+      "name": "My TAI",
+      "image": "assets/images/my_tai.webp",
+      "period": "02/2025 - Present",
+      "description": "CRM and employee app for The Address Investments' 2,500+ staff: leads, customers, vacancies and real-time updates. 5K+ downloads, 4.5★ from 50+ ratings.",
+      "highlights": [
+        "Problem: sales teams needed the full CRM in their pocket, not only on the desktop.",
+        "My role: senior Flutter engineer maintaining and extending the app.",
+        "Hard part: real-time updates over Socket IO, offline caching with Hive, charts and maps on large datasets.",
+        "Result: 5K+ downloads and a 4.5★ App Store rating from 50+ ratings."
+      ],
+      "technologies": [
+        "Flutter",
+        "BLoC",
+        "Socket IO",
+        "Hive",
         "Charts"
       ],
       "screenshots": [
@@ -112,50 +169,66 @@
       ],
       "stores": [
         "https://apps.apple.com/eg/app/my-tai/id1613010314",
-        "https://play.google.com/store/apps/details?id=com.theaddress.mytai&hl=en"
+        "https://play.google.com/store/apps/details?id=com.theaddress.mytai"
       ]
     },
     {
-      "name": "POPs Restaurant+",
-      "image": "assets/images/pops_enterprise.png",
-      "period": "04/2022 - 02/2025",
-      "description": "Intuitive interface for restaurant staff; cloud-based item management and payment processing; improved efficiency and reduced order processing time by 50%.",
+      "name": "The MarQ",
+      "image": "assets/images/marq_communities.webp",
+      "period": "02/2025 - Present",
+      "description": "Resident and community app for The MarQ developments. 4.5★ on the App Store.",
       "technologies": [
         "Flutter",
         "Dart",
-        "Firebase",
-        "Soket IO"
+        "Firebase"
       ],
       "screenshots": [],
       "stores": [
-        "https://apps.apple.com/eg/app/pops-restaurant/id1630635108?l=ar",
-        "https://play.google.com/store/search?q=pops+restaurant+plus&c=apps",
-        "https://appgallery.huawei.com/app/C107076071",
-        "https://apps.microsoft.com/detail/9pk6d2d21mg7?hl=en-US&gl=US"
+        "https://apps.apple.com/eg/app/the-marq/id1643949318",
+        "https://play.google.com/store/apps/details?id=com.themarq.experience"
       ]
     },
     {
       "name": "E-Invoice QR Reader (KSA)",
       "image": "assets/images/e_invoice_image.webp",
       "period": "07/2022 - 08/2022",
-      "description": "App to display QR code content of E-invoice (KSA). Tracks transactions, visualizes expenses with graphs, exportable reports. 250K+ active users.",
+      "description": "Reads Saudi ZATCA e-invoice QR codes, tracks transactions and visualizes expenses with exportable reports. 250K+ active users.",
       "technologies": [
         "Flutter",
         "Dart",
-        "QR-Reader",
+        "QR Scanner",
         "KSA E-Invoice"
       ],
       "screenshots": [],
       "stores": [
-        "https://apps.apple.com/us/app/e-invoice-qr-reader-ksa/id1580793042?platform=iphone",
-        "https://play.google.com/store/apps/details?id=com.posbankbh.einvoiceqrreader&hl=en&gl=US"
+        "https://apps.apple.com/us/app/e-invoice-qr-reader-ksa/id1580793042",
+        "https://play.google.com/store/apps/details?id=com.posbankbh.einvoiceqrreader"
+      ]
+    },
+    {
+      "name": "POPs Restaurant+",
+      "image": "assets/images/pops_enterprise.png",
+      "period": "04/2022 - 02/2025",
+      "description": "The restaurant edition of the POPs POS line, a sibling of Snapos (formerly POPs Enterprise), built for restaurant workflows and shipped from one Flutter codebase to App Store, Google Play, Huawei AppGallery and Microsoft Store.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Firebase",
+        "Socket IO"
+      ],
+      "screenshots": [],
+      "stores": [
+        "https://apps.apple.com/eg/app/pops-restaurant/id1630635108",
+        "https://play.google.com/store/search?q=pops+restaurant+plus&c=apps",
+        "https://appgallery.huawei.com/app/C107076071",
+        "https://apps.microsoft.com/detail/9pk6d2d21mg7?hl=en-US&gl=US"
       ]
     },
     {
       "name": "Ovii Care",
-      "image": "",
+      "image": "assets/images/ovii_care.webp",
       "period": "01/2024 - 01/2025",
-      "description": "Female-centric health & wellness app; personalized features for women's health.",
+      "description": "Female-centric health and wellness app with personalized tracking, expert guidance and in-app payments.",
       "technologies": [
         "Flutter",
         "Dart",
@@ -167,15 +240,22 @@
       "stores": [
         "https://apps.apple.com/sa/app/ovii/id6532629410"
       ]
+    },
+    {
+      "name": "Country Phone Picker",
+      "image": "",
+      "period": "2025",
+      "description": "Open-source Flutter package (customized_country_phone_picker): phone input with a country picker, EN/AR names, paste-to-detect and strict validation. 160 pub points on pub.dev.",
+      "technologies": [
+        "Flutter",
+        "Dart",
+        "Open Source"
+      ],
+      "screenshots": [],
+      "link": "https://pub.dev/packages/customized_country_phone_picker",
+      "github": "https://github.com/MustafaYounis27/customized_country_phone_picker",
+      "stores": []
     }
   ],
-  "links": {
-    "app_store_examples": [
-      "https://apps.apple.com/eg/app/pops-restaurant/id1630635108?l=ar",
-      "https://apps.apple.com/tr/app/pops-enterprise/id6448128426"
-    ],
-    "play_store_examples": [
-      "https://play.google.com/store/apps/details?id=com.posbankbh.popsenterprise.cloud"
-    ]
-  }
+  "testimonials": []
 }

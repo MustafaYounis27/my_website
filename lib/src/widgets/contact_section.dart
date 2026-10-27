@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -20,7 +21,7 @@ class ContactSection extends StatelessWidget {
     if (cv == null) return const SizedBox.shrink();
 
     return SectionShell(
-      index: '05',
+      index: cv.testimonials.isEmpty ? '05' : '06',
       label: 'CONTACT',
       title: 'Get in touch',
       subtitle: 'The fastest way to reach me',
@@ -33,6 +34,17 @@ class ContactSection extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Copies the address and confirms. Works for visitors with no mail app set
+/// up, where `mailto:` silently does nothing.
+Future<void> _copyEmail(BuildContext context, String email) async {
+  trackEvent('contact_email_copy');
+  await Clipboard.setData(ClipboardData(text: email));
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Copied $email')),
+  );
 }
 
 class _CtaBand extends StatelessWidget {
@@ -92,6 +104,11 @@ class _CtaBand extends StatelessWidget {
                   trackEvent('contact_email_click', params: {'method': 'mailto'});
                   launchUrlString('mailto:${cv.email}');
                 },
+              ),
+              _CtaButton(
+                icon: Icons.copy_rounded,
+                label: 'Copy email',
+                onPressed: () => _copyEmail(context, cv.email),
               ),
               _CtaButton(
                 icon: Icons.chat_bubble_outline_rounded,
@@ -202,7 +219,14 @@ class _ContactFormState extends State<_ContactForm> {
     _messageCtrl.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Opening email client…')),
+      SnackBar(
+        content: const Text('Opening your email app… Nothing opened? Copy my address instead.'),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(
+          label: 'Copy email',
+          onPressed: () => _copyEmail(context, widget.email),
+        ),
+      ),
     );
   }
 

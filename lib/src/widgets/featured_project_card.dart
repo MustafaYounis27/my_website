@@ -20,6 +20,8 @@ class FeaturedProjectCard extends StatelessWidget {
     if (url.contains('play.google.com')) return 'Play Store';
     if (url.contains('appgallery.huawei.com')) return 'AppGallery';
     if (url.contains('apps.microsoft.com')) return 'Microsoft Store';
+    if (url.contains('pub.dev')) return 'pub.dev';
+    if (url.contains('github.com')) return 'GitHub';
     return Uri.tryParse(url)?.host.replaceFirst('www.', '') ?? url;
   }
 
@@ -28,6 +30,8 @@ class FeaturedProjectCard extends StatelessWidget {
     if (url.contains('play.google.com')) return Icons.shop;
     if (url.contains('appgallery.huawei.com')) return Icons.apps;
     if (url.contains('apps.microsoft.com')) return Icons.window;
+    if (url.contains('pub.dev')) return Icons.inventory_2_outlined;
+    if (url.contains('github.com')) return Icons.code_rounded;
     return Icons.link;
   }
 
@@ -76,6 +80,20 @@ class FeaturedProjectCard extends StatelessWidget {
         ),
         const SizedBox(height: AppSpace.sm),
         Text(project.description, style: theme.textTheme.bodyMedium),
+        for (final point in project.highlights) ...[
+          const SizedBox(height: AppSpace.xs),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 7),
+                child: Icon(Icons.circle, size: 6, color: p.brand),
+              ),
+              const SizedBox(width: AppSpace.xs),
+              Expanded(child: Text(point, style: theme.textTheme.bodyMedium)),
+            ],
+          ),
+        ],
         if (project.technologies.isNotEmpty) ...[
           const SizedBox(height: AppSpace.sm),
           Wrap(
@@ -84,13 +102,13 @@ class FeaturedProjectCard extends StatelessWidget {
             children: [for (final tech in project.technologies) TagChip(tech)],
           ),
         ],
-        if (project.stores.isNotEmpty) ...[
+        if (project.allLinks.isNotEmpty) ...[
           const SizedBox(height: AppSpace.md),
           Wrap(
             spacing: AppSpace.xs,
             runSpacing: AppSpace.xs,
             children: [
-              for (final store in project.stores)
+              for (final store in project.allLinks)
                 OutlinedButton.icon(
                   onPressed: () {
                     trackEvent('project_link_click', params: {

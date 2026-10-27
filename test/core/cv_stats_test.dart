@@ -4,6 +4,7 @@ import 'package:my_website/src/models/cv.dart';
 
 CV _cv({
   int? yearsExperience,
+  String? usersReached,
   List<Experience> experience = const [],
   List<Project> projects = const [],
   List<String> skills = const [],
@@ -18,11 +19,11 @@ CV _cv({
       github: 'gh',
       summary: 's',
       yearsExperience: yearsExperience,
+      usersReached: usersReached,
       education: Education(degree: 'd', university: 'u', period: 'p', location: 'l'),
       skills: skills,
       experience: experience,
       projects: projects,
-      links: Links(appStoreExamples: const [], playStoreExamples: const []),
     );
 
 Experience _exp(String period) =>
@@ -57,7 +58,7 @@ void main() {
     expect(CvStats.from(_cv(), now: DateTime(2026, 8, 26)).years, 0);
   });
 
-  test('counts projects and distinct store hosts', () {
+  test('counts shipped apps and distinct store hosts', () {
     final stats = CvStats.from(
       _cv(projects: [
         _project(const [
@@ -67,10 +68,11 @@ void main() {
           'https://apps.microsoft.com/detail/x',
         ]),
         _project(const ['https://apps.apple.com/eg/app/b/id2']),
+        _project(const []),
       ]),
       now: DateTime(2026, 8, 26),
     );
-    expect(stats.projects, 2);
+    expect(stats.appsShipped, 2);
     expect(stats.stores, 4);
   });
 
@@ -82,7 +84,9 @@ void main() {
     expect(stats.stores, 0);
   });
 
-  test('technologies counts the skill list', () {
-    expect(CvStats.from(_cv(skills: const ['a', 'b', 'c'])).technologies, 3);
+  test('usersReached passes through and blank hides it', () {
+    expect(CvStats.from(_cv(usersReached: '250K+')).usersReached, '250K+');
+    expect(CvStats.from(_cv(usersReached: '  ')).usersReached, isNull);
+    expect(CvStats.from(_cv()).usersReached, isNull);
   });
 }

@@ -5,7 +5,7 @@ import 'package:my_website/src/pages/home_page.dart';
 import 'package:my_website/src/state/cv_provider.dart';
 import 'package:my_website/src/state/theme_provider.dart';
 
-const _sample = '{"name":"John Doe","title":"Senior Mobile Engineer","email":"a@b.c","phone":"123","location":"X","linkedin":"L","github":"G","summary":"Summary.","education":{"degree":"BSc","university":"Uni","period":"1-2","location":"X"},"skills":["Flutter"],"experience":[],"projects":[],"links":{}}';
+const _sample = '{"name":"John Doe","title":"Senior Mobile Engineer","email":"a@b.c","phone":"123","location":"X","linkedin":"L","github":"G","summary":"Summary.","education":{"degree":"BSc","university":"Uni","period":"1-2","location":"X"},"skills":["Flutter"],"experience":[],"projects":[]}';
 
 void main() {
   testWidgets('Hero renders name and title from JSON', (tester) async {
@@ -36,5 +36,31 @@ void main() {
 
     expect(find.text('John Doe'), findsOneWidget);
     expect(find.text('Senior Mobile Engineer'), findsOneWidget);
+  });
+
+  testWidgets('Hero shows headline and availability; About keeps the summary', (tester) async {
+    final cvProvider = CVProvider();
+    await cvProvider.loadFromString(
+      _sample.replaceFirst('"summary":"Summary."',
+          '"summary":"Summary.","headline":"Short pitch.","availability":"Open to roles","usersReached":"250K+"'),
+    );
+    tester.view.physicalSize = const Size(1200, 800);
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<CVProvider>.value(value: cvProvider),
+          ChangeNotifierProvider<ThemeProvider>.value(value: ThemeProvider()),
+        ],
+        child: const MaterialApp(home: HomePage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Short pitch.'), findsOneWidget);
+    expect(find.text('Open to roles'), findsOneWidget);
+    expect(find.text('Summary.'), findsOneWidget);
+    expect(find.text('250K+'), findsOneWidget);
   });
 }

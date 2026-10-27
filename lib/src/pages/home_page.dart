@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../core/design/app_tokens.dart';
 import '../core/responsive.dart';
 import '../core/seo.dart';
+import '../core/site.dart';
 import '../state/cv_provider.dart';
 import '../widgets/about_section.dart';
 import '../widgets/common/aurora_background.dart';
@@ -15,6 +16,7 @@ import '../widgets/projects_section.dart';
 import '../widgets/site_footer.dart';
 import '../widgets/skills_section.dart';
 import '../widgets/stats_section.dart';
+import '../widgets/testimonials_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -58,8 +60,8 @@ class _HomePageState extends State<HomePage> {
       Seo.update(
         title: '${cv.name} - ${cv.title}',
         description: cv.summary,
-        imageUrl: '/icons/Icon-512.png',
-        urlPath: '/',
+        imageUrl: Site.ogImage,
+        urlPath: Site.page('/'),
       );
     }
   }
@@ -96,6 +98,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final gap = context.isMobile ? AppSpace.sectionMobile : AppSpace.section;
+    final hasTestimonials = context.watch<CVProvider>().cv?.testimonials.isNotEmpty ?? false;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -144,6 +147,10 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(key: _keys['projects']),
                 const ProjectsSection(),
                 SizedBox(height: gap),
+                if (hasTestimonials) ...[
+                  const TestimonialsSection(),
+                  SizedBox(height: gap),
+                ],
                 SizedBox(key: _keys['contact']),
                 const ContactSection(),
                 const SizedBox(height: AppSpace.xxl),
