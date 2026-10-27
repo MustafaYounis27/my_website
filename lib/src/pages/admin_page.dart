@@ -11,11 +11,7 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  bool _authorized = false;
-  final _passwordCtrl = TextEditingController();
   final _jsonCtrl = TextEditingController();
-  static const _passwordKey = 'admin_password_ok';
-  static const _defaultPass = 'admin123';
 
   @override
   void initState() {
@@ -25,19 +21,12 @@ class _AdminPageState extends State<AdminPage> {
 
   Future<void> _bootstrap() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() => _authorized = prefs.getBool(_passwordKey) ?? false);
-    final cv = context.read<CVProvider>().cv;
-    if (cv != null) {
-      // Not the original JSON, but allow editing using current provider JSON snapshot
-      // In a full app, we'd fetch the original text. Here, we keep it simple.
-    }
     final override = prefs.getString('cv_override_json');
     if (override != null) _jsonCtrl.text = override;
   }
 
   @override
   void dispose() {
-    _passwordCtrl.dispose();
     _jsonCtrl.dispose();
     super.dispose();
   }
@@ -45,51 +34,10 @@ class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin (local)')),
+      appBar: AppBar(title: const Text('Admin (debug only)')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: _authorized ? _buildEditor(context) : _buildLogin(context),
-      ),
-    );
-  }
-
-  Widget _buildLogin(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text('Enter password to edit (stored in browser only):'),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _passwordCtrl,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () async {
-                    if (_passwordCtrl.text == _defaultPass) {
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool(_passwordKey, true);
-                      setState(() => _authorized = true);
-                    } else {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Wrong password')));
-                      }
-                    }
-                  },
-                  child: const Text('Login'),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: _buildEditor(context),
       ),
     );
   }

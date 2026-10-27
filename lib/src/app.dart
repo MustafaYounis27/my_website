@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
@@ -38,8 +39,11 @@ class MyPortfolioApp extends StatelessWidget {
               '/': (_) => const HomePage(),
               '/projects': (_) => const ProjectsPage(),
               '/resume': (_) => const ResumePage(),
-              '/admin': (_) => const AdminPage(),
+              // Local content editor; never shipped in release builds.
+              if (kDebugMode) '/admin': (_) => const AdminPage(),
             },
+            onUnknownRoute: (settings) =>
+                MaterialPageRoute(settings: settings, builder: (_) => const HomePage()),
           );
         },
       ),
